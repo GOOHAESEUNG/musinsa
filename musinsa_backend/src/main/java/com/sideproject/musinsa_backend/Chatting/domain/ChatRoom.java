@@ -32,7 +32,7 @@ public class ChatRoom extends BaseTimeEntity {
     //채팅방 종류
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    private ChatType chatType = ChatType.NOTICE;
+    private ChatRoomType chatRoomType = ChatRoomType.NOTICE;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatParticipant> chatParticipants = new ArrayList<>();
