@@ -8,38 +8,22 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
-public class ChatMessage extends BaseTimeEntity {
+public class MessageComplete extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "chat_room_id", nullable = false)
-    private ChatRoom chatRoom;
+    @JoinColumn(name = "chat_message_id", nullable = false)
+    private ChatMessage chatMessage;
 
+    //확인한 직원
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
-
-    @Column(nullable = false, length = 500)
-    private String content;
-
-    private String imageUrl;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private MessageType messageType;
-
-    @OneToMany(mappedBy = "chatMessage", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ReadStatus> readStatuses = new ArrayList<>();
 }
-

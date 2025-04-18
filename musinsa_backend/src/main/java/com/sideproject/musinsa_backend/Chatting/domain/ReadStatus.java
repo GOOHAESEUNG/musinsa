@@ -24,7 +24,7 @@ public class ReadStatus extends BaseTimeEntity {
     private ChatRoom chatRoom;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "empolyee_id", nullable = false)
+    @JoinColumn(name = "employee_id", nullable = false)
     private Employee empolyee;
 
     @ManyToOne(fetch = FetchType.LAZY)
