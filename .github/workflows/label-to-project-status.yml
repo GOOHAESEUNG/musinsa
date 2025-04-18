@@ -1,62 +1,81 @@
-name: Update Project Status by Label
+- name: Check label and update project status
+  uses: actions/github-script@v7
+  with:
+    github-token: ${{ secrets.GH_PROJECT_TOKEN }}
+    script: |
+      const label = context.payload.label.name;
+      const issueId = context.payload.issue.node_id;
 
-on:
-  issues:
-    types: [labeled]
+      const PROJECT_NUMBER = 1;
+      const ORG = 'GOOHAESEUNG';
+      const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
+      const STATUS_VALUES = {
+        "🚧 진행 중": "47fc9ee4",
+        "✅ 완료됨": "98236657"
+      };
 
-jobs:
-  update-project-status:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check label and update project status
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GH_PROJECT_TOKEN }}
-          script: |
-            const label = context.payload.label.name;
-            const issueNodeId = context.payload.issue.node_id;
+      if (!STATUS_VALUES[label]) {
+        console.log(`해당 라벨은 자동처리 대상이 아님: ${label}`);
+        return;
+      }
 
-            const PROJECT_NUMBER = 1;
-            const ORG = 'GOOHAESEUNG';
-            const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
-            const STATUS_VALUES = {
-              "🚧 진행 중": "47fc9ee4",  // In Progress
-              "✅ 완료됨": "98236657"   // Done
-            };
-
-            if (!STATUS_VALUES[label]) {
-              console.log(`해당 라벨은 자동처리 대상이 아님: ${label}`);
-              return;
+      // Step 1: Get the project ID
+      const { user } = await github.graphql(`
+        query {
+          user(login: "${ORG}") {
+            projectV2(number: ${PROJECT_NUMBER}) {
+              id
             }
+          }
+        }
+      `);
+      const projectId = user.projectV2.id;
 
-            const { user } = await github.graphql(`
-              query {
-                user(login: "${ORG}") {
-                  projectV2(number: ${PROJECT_NUMBER}) {
+      // Step 2: Find the item ID inside the project that maps to this issue
+      const result = await github.graphql(`
+        query {
+          node(id: "${issueId}") {
+            ... on Issue {
+              projectItems(first: 10) {
+                nodes {
+                  id
+                  project {
                     id
                   }
                 }
               }
-            `);
+            }
+          }
+        }
+      `);
 
-            const projectId = user.projectV2.id;
-            console.log("✅ Project ID:", projectId);
+      const item = result.node.projectItems.nodes.find(
+        i => i.project.id === projectId
+      );
 
-            await github.graphql(`
-              mutation {
-                updateProjectV2ItemFieldValue(
-                  input: {
-                    projectId: "${projectId}"
-                    itemId: "${issueNodeId}"
-                    fieldId: "${FIELD_ID}"
-                    value: {
-                      singleSelectOptionId: "${STATUS_VALUES[label]}"
-                    }
-                  }
-                ) {
-                  projectV2Item {
-                    id
-                  }
-                }
+      if (!item) {
+        console.log("⚠️ 프로젝트에 해당 이슈가 추가되어 있지 않음");
+        return;
+      }
+
+      const itemId = item.id;
+
+      // Step 3: Update the Status field value
+      await github.graphql(`
+        mutation {
+          updateProjectV2ItemFieldValue(
+            input: {
+              projectId: "${projectId}"
+              itemId: "${itemId}"
+              fieldId: "${FIELD_ID}"
+              value: {
+                singleSelectOptionId: "${STATUS_VALUES[label]}"
               }
-            `);
+            }
+          ) {
+            projectV2Item {
+              id
+            }
+          }
+        }
+      `);
