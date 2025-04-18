@@ -25,7 +25,7 @@ jobs:
             const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
             const STATUS_VALUES = {
               "🚧 진행 중": "47fc9ee4",
-              "✅ 완료됨": "98236657"
+              "✅ 완료됨": "d0e1aef0" // Updated to the correct ID for "Done"
             };
 
             try {
