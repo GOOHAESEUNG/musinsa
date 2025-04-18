@@ -31,7 +31,7 @@ jobs:
 
             const { data: projects } = await github.graphql(`
               query {
-                organization(login: "${ORG}") {
+                user(login: "${ORG}") {
                   projectV2(number: ${PROJECT_NUMBER}) {
                     id
                   }
@@ -39,7 +39,7 @@ jobs:
               }
             `);
 
-            const projectId = projects.organization.projectV2.id;
+            const projectId = projects.user.projectV2.id;
             console.log("✅ Project ID:", projectId);
 
             await github.graphql(`
