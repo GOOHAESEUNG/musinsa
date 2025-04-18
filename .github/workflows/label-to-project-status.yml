@@ -119,7 +119,13 @@ jobs:
 
               const itemId = matchingItem.id;
 
-              await github.graphql(`
+              console.log(`🛠 상태 업데이트 시도:`);
+              console.log(`→ 라벨: ${label}`);
+              console.log(`→ 항목 ID: ${itemId}`);
+              console.log(`→ 필드 ID: ${FIELD_ID}`);
+              console.log(`→ 선택 옵션 ID: ${STATUS_VALUES[label]}`);
+
+              const updateResponse = await github.graphql(`
                 mutation {
                   updateProjectV2ItemFieldValue(
                     input: {
@@ -138,7 +144,7 @@ jobs:
                 }
               `);
 
-              console.log(`✅ 항목 상태가 '${label}'로 업데이트됨`);
+              console.log("✅ 상태 업데이트 응답:", JSON.stringify(updateResponse, null, 2));
             } catch (error) {
               console.error("❌ 오류 발생:", error);
             }
