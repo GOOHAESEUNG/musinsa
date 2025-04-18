@@ -1,81 +1,163 @@
-- name: Check label and update project status
-  uses: actions/github-script@v7
-  with:
-    github-token: ${{ secrets.GH_PROJECT_TOKEN }}
-    script: |
-      const label = context.payload.label.name;
-      const issueId = context.payload.issue.node_id;
+name: Update Project Status on Label
 
-      const PROJECT_NUMBER = 1;
-      const ORG = 'GOOHAESEUNG';
-      const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
-      const STATUS_VALUES = {
-        "🚧 진행 중": "47fc9ee4",
-        "✅ 완료됨": "98236657"
-      };
+on:
+  issues:
+    types: [labeled]
 
-      if (!STATUS_VALUES[label]) {
-        console.log(`해당 라벨은 자동처리 대상이 아님: ${label}`);
-        return;
-      }
+jobs:
+  update-project-status:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check label and update project status
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GH_PROJECT_TOKEN }}
+          script: |
+            const label = context.payload.label.name;
+            const issueNumber = context.payload.issue.number;
+            const repository = context.payload.repository.full_name;
+            const [owner, repo] = repository.split('/');
 
-      // Step 1: Get the project ID
-      const { user } = await github.graphql(`
-        query {
-          user(login: "${ORG}") {
-            projectV2(number: ${PROJECT_NUMBER}) {
-              id
+            const PROJECT_NUMBER = 1;
+            const LOGIN = 'GOOHAESEUNG';  // 사용자 로그인 또는 조직명
+            const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
+            const STATUS_VALUES = {
+              "🚧 진행 중": "47fc9ee4",
+              "✅ 완료됨": "98236657"
+            };
+
+            if (!STATUS_VALUES[label]) {
+              console.log(`해당 라벨은 자동처리 대상이 아님: ${label}`);
+              return;
             }
-          }
-        }
-      `);
-      const projectId = user.projectV2.id;
 
-      // Step 2: Find the item ID inside the project that maps to this issue
-      const result = await github.graphql(`
-        query {
-          node(id: "${issueId}") {
-            ... on Issue {
-              projectItemsV2(first: 10) {
-                nodes {
-                  id
-                  project {
-                    id
+            try {
+              // Step 1: 프로젝트 ID 가져오기
+              console.log(`프로젝트 정보 조회 중...`);
+              const projectQuery = await github.graphql(`
+                query {
+                  user(login: "${LOGIN}") {
+                    projectV2(number: ${PROJECT_NUMBER}) {
+                      id
+                    }
                   }
                 }
+              `);
+            
+              const projectId = projectQuery.user.projectV2.id;
+              console.log(`프로젝트 ID: ${projectId}`);
+            
+              // Step 2: 이슈 정보 가져오기
+              console.log(`이슈 정보 조회 중... (저장소: ${repository}, 이슈 번호: ${issueNumber})`);
+              const issueQuery = await github.graphql(`
+                query {
+                  repository(owner: "${owner}", name: "${repo}") {
+                    issue(number: ${issueNumber}) {
+                      id
+                      title
+                    }
+                  }
+                }
+              `);
+            
+              const issueId = issueQuery.repository.issue.id;
+              console.log(`이슈 ID: ${issueId}, 제목: ${issueQuery.repository.issue.title}`);
+            
+              // Step 3: 프로젝트에서 이슈 항목 찾기
+              console.log(`프로젝트에서 이슈 항목 찾는 중...`);
+              const itemsQuery = await github.graphql(`
+                query {
+                  node(id: "${projectId}") {
+                    ... on ProjectV2 {
+                      items(first: 100) {
+                        nodes {
+                          id
+                          content {
+                            ... on Issue {
+                              id
+                              number
+                              title
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              `);
+            
+              const projectItems = itemsQuery.node.items.nodes;
+              const matchingItem = projectItems.find(item => 
+                item.content && item.content.id === issueId
+              );
+            
+              if (!matchingItem) {
+                console.log(`⚠️ 프로젝트에 해당 이슈가 존재하지 않습니다. 먼저 이슈를 프로젝트에 추가해주세요.`);
+            
+                // Step 4: 프로젝트에 이슈 추가 (선택사항)
+                console.log(`이슈를 프로젝트에 추가합니다...`);
+                const addResult = await github.graphql(`
+                  mutation {
+                    addProjectV2ItemById(input: {
+                      projectId: "${projectId}"
+                      contentId: "${issueId}"
+                    }) {
+                      item {
+                        id
+                      }
+                    }
+                  }
+                `);
+            
+                const itemId = addResult.addProjectV2ItemById.item.id;
+                console.log(`✅ 이슈가 프로젝트에 추가되었습니다. 항목 ID: ${itemId}`);
+            
+                // 추가 후 상태 업데이트
+                await github.graphql(`
+                  mutation {
+                    updateProjectV2ItemFieldValue(
+                      input: {
+                        projectId: "${projectId}"
+                        itemId: "${itemId}"
+                        fieldId: "${FIELD_ID}"
+                        value: {
+                          singleSelectOptionId: "${STATUS_VALUES[label]}"
+                        }
+                      }
+                    ) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `);
+                console.log(`✅ 항목 상태가 '${label}'로 업데이트되었습니다.`);
+              } else {
+                // 이미 프로젝트에 있는 이슈 상태 업데이트
+                const itemId = matchingItem.id;
+                console.log(`✅ 프로젝트에서 이슈를 찾았습니다. 항목 ID: ${itemId}`);
+            
+                await github.graphql(`
+                  mutation {
+                    updateProjectV2ItemFieldValue(
+                      input: {
+                        projectId: "${projectId}"
+                        itemId: "${itemId}"
+                        fieldId: "${FIELD_ID}"
+                        value: {
+                          singleSelectOptionId: "${STATUS_VALUES[label]}"
+                        }
+                      }
+                    ) {
+                      projectV2Item {
+                        id
+                      }
+                    }
+                  }
+                `);
+                console.log(`✅ 항목 상태가 '${label}'로 업데이트되었습니다.`);
               }
+            } catch (error) {
+              console.error('오류 발생:', error);
+              console.log('오류 세부정보:', JSON.stringify(error, null, 2));
             }
-          }
-        }
-      `);
-
-      const item = result.node.projectItemsV2.nodes.find(
-        i => i.project.id === projectId
-      );
-
-      if (!item) {
-        console.log("⚠️ 프로젝트에 해당 이슈가 추가되어 있지 않음");
-        return;
-      }
-
-      const itemId = item.id;
-
-      // Step 3: Update the Status field value
-      await github.graphql(`
-        mutation {
-          updateProjectV2ItemFieldValue(
-            input: {
-              projectId: "${projectId}"
-              itemId: "${itemId}"
-              fieldId: "${FIELD_ID}"
-              value: {
-                singleSelectOptionId: "${STATUS_VALUES[label]}"
-              }
-            }
-          ) {
-            projectV2Item {
-              id
-            }
-          }
-        }
-      `);
