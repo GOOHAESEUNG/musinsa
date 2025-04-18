@@ -18,7 +18,7 @@ jobs:
 
             const PROJECT_NUMBER = 1;
             const ORG = 'GOOHAESEUNG';
-            const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
+            const FIELD_ID = 'PVT_FIELD_abc123';  // Updated FIELD_ID
             const STATUS_VALUES = {
               "🚧 진행 중": "47fc9ee4",  // In Progress
               "✅ 완료됨": "98236657"   // Done
