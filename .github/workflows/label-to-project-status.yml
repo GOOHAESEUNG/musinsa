@@ -16,9 +16,9 @@ jobs:
             const label = context.payload.label.name;
             const issueNodeId = context.payload.issue.node_id;
 
-            const PROJECT_NUMBER = 1; // 너의 Project 번호
-            const ORG = 'GOOHAESEUNG'; // 예: 'haeseung-musinsa'
-            const FIELD_ID = 'PVT_FIELD_abc123'; // Status 필드 ID
+            const PROJECT_NUMBER = 1;
+            const ORG = 'GOOHAESEUNG';
+            const FIELD_ID = 'PVT_FIELD_abc123';
             const STATUS_VALUES = {
               "🚧 진행 중": "OPTION_inprogress_456",
               "✅ 완료됨": "OPTION_done_789"
@@ -29,7 +29,7 @@ jobs:
               return;
             }
 
-            const { data: projects } = await github.graphql(`
+            const { user } = await github.graphql(`
               query {
                 user(login: "${ORG}") {
                   projectV2(number: ${PROJECT_NUMBER}) {
@@ -39,7 +39,7 @@ jobs:
               }
             `);
 
-            const projectId = projects.user.projectV2.id;
+            const projectId = user.projectV2.id;
             console.log("✅ Project ID:", projectId);
 
             await github.graphql(`
