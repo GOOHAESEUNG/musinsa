@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+
+# IntelliJ
+.idea/
+musinsa_backend/.idea/
+# Gradle
+.gradle/
+build/
+bin/
+
+# Java
+*.class
+*.log
+
+# 환경설정
+.env
+*.env
+*.properties
+*.yml
+**/.env
+**/application.properties
