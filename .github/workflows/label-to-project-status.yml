@@ -36,7 +36,7 @@
         query {
           node(id: "${issueId}") {
             ... on Issue {
-              projectItems(first: 10) {
+              projectItemsV2(first: 10) {
                 nodes {
                   id
                   project {
@@ -49,7 +49,7 @@
         }
       `);
 
-      const item = result.node.projectItems.nodes.find(
+      const item = result.node.projectItemsV2.nodes.find(
         i => i.project.id === projectId
       );
 
