@@ -20,7 +20,7 @@ public class Employee extends BaseTimeEntity {
     private String name;
 
     //근무층
-    private Integer floor;
+    private String floor;
 
     //입사일
     private Date join_date;
