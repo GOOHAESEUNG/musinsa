@@ -35,3 +35,22 @@ out/
 
 ### VS Code ###
 .vscode/
+
+
+# macOS
+.DS_Store
+
+# IntelliJ
+.idea/
+
+# Gradle
+*.log
+build/
+.gradle/
+
+# 설정 파일
+*.env
+*.properties
+*.yml
+**/.env
+**/application.properties
