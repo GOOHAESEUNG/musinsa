@@ -1,5 +1,6 @@
 package com.sideproject.musinsa_backend.Employee.domain;
 
+import com.sideproject.musinsa_backend.Common.domain.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Date;
 @AllArgsConstructor //모든 필드를 매개변수로 받는 생성자 생성
 @NoArgsConstructor//매개변수가 없는 기본 생성자를 자동으로 생성
 @Getter
-public class Employee {
+public class Employee extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
