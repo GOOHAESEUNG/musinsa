@@ -18,10 +18,10 @@ jobs:
 
             const PROJECT_NUMBER = 1;
             const ORG = 'GOOHAESEUNG';
-            const FIELD_ID = 'PVT_FIELD_abc123';
+            const FIELD_ID = 'PVTSSF_lAHOB1FNEc4Asorvzgjhx4s';
             const STATUS_VALUES = {
-              "🚧 진행 중": "OPTION_inprogress_456",
-              "✅ 완료됨": "OPTION_done_789"
+              "🚧 진행 중": "47fc9ee4",  // In Progress
+              "✅ 완료됨": "98236657"   // Done
             };
 
             if (!STATUS_VALUES[label]) {
