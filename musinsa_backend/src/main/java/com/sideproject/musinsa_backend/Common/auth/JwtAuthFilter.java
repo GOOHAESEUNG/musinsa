@@ -3,6 +3,7 @@ package com.sideproject.musinsa_backend.Common.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +33,15 @@ public class JwtAuthFilter extends GenericFilter {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    Key key = new SecretKeySpec(Base64.getDecoder().decode(secretKey), SignatureAlgorithm.HS512.getJcaName());
+    private Key key;
+
+    @PostConstruct
+    public void initKey() {
+        this.key = new SecretKeySpec(
+            Base64.getDecoder().decode(secretKey),
+            SignatureAlgorithm.HS512.getJcaName()
+        );
+    }
 
     @Override
     public void doFilter(ServletRequest request, //request 안에 토큰이 들어가 있음
