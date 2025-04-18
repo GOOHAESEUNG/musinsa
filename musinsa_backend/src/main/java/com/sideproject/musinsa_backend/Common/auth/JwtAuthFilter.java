@@ -3,6 +3,7 @@ package com.sideproject.musinsa_backend.Common.auth;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,7 +33,15 @@ public class JwtAuthFilter extends GenericFilter {
     @Value("${jwt.secretKey}")
     private String secretKey;
 
-    Key key = new SecretKeySpec(Base64.getDecoder().decode(secretKey), SignatureAlgorithm.HS512.getJcaName());
+    private Key key;
+
+    @PostConstruct
+    public void initKey() {
+        this.key = new SecretKeySpec(
+            Base64.getDecoder().decode(secretKey),
+            SignatureAlgorithm.HS512.getJcaName()
+        );
+    }
 
     @Override
     public void doFilter(ServletRequest request, //request 안에 토큰이 들어가 있음
@@ -67,7 +76,7 @@ public class JwtAuthFilter extends GenericFilter {
                         //2. 서명이 요한지 확인(위조 여부 판단)
                         //3. 유효하면 payload 안에 잇는 정보를 꺼냄
                         .getBody(); //위에서 해석한 토큰의 페이로드부분(claims)를 꺼냄
-                        //이 안에 우리가 넣은 정보가 들어있음(email, position, exp, iat 등)
+                //이 안에 우리가 넣은 정보가 들어있음(email, position, exp, iat 등)
 
 //                JWT 인증 필터 안에서 Spring Security 인증 객체를 직접 만드는 과정
 
