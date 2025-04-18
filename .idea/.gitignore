@@ -1,0 +1,17 @@
+# 디폴트 무시된 파일
+/shelf/
+/workspace.xml
+# 에디터 기반 HTTP 클라이언트 요청
+/httpRequests/
+# Datasource local storage ignored files
+/dataSources/
+/dataSources.local.xml
+
+# 환경 설정 파일
+musinsa_backend/src/main/resources/.env
+musinsa_backend/src/main/resources/application.properties
+
+# 환경 설정 파일 전체 무시
+*.env
+*.properties
+*.yml
