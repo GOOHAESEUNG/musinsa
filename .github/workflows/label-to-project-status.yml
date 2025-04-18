@@ -17,11 +17,11 @@ jobs:
             const issueNodeId = context.payload.issue.node_id;
 
             const PROJECT_NUMBER = 1; // 너의 Project 번호
-            const ORG = '사용자명 또는 조직명'; // 예: 'haeseung-musinsa'
-            const FIELD_ID = '필드 ID'; // Status 필드 ID
+            const ORG = 'GOOHAESEUNG'; // 예: 'haeseung-musinsa'
+            const FIELD_ID = 'PVT_FIELD_abc123'; // Status 필드 ID
             const STATUS_VALUES = {
-              "🚧 진행 중": "인프로그레스 ID",
-              "✅ 완료됨": "던 ID"
+              "🚧 진행 중": "OPTION_inprogress_456",
+              "✅ 완료됨": "OPTION_done_789"
             };
 
             if (!STATUS_VALUES[label]) {
