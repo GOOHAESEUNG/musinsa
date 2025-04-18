@@ -17,6 +17,5 @@ bin/
 .env
 *.env
 *.properties
-*.yml
 **/.env
 **/application.properties
