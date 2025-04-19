@@ -26,7 +26,17 @@
         </select>
  
         <label>층</label>
-        <input v-model="form.floor" type="text" required />
+        <div class="floor-button-group">
+          <button
+            v-for="option in floorOptions"
+            :key="option"
+            type="button"
+            :class="{ selected: form.floor === option }"
+            @click="form.floor = option"
+          >
+            {{ option }}
+          </button>
+        </div>
  
         <label>입사일</label>
         <input v-model="form.join_date" type="date" required />
@@ -54,6 +64,8 @@ const form = ref({
   join_date: '',
 })
 
+const floorOptions = ['지하1층', '1층', '2층', '3층', '4층', '관리자']
+
 const errorMessage = ref('')
 
 const submitForm = async () => {
@@ -68,19 +80,22 @@ const submitForm = async () => {
 
 <style scoped>
 .signup-container {
-  max-width: 400px;
-  margin: auto;
-  padding: 20px;
+  min-height: 100vh;
   background-color: #000;
   color: white;
-  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
   box-sizing: border-box;
 }
 .form-fields {
-  background-color: white;
   padding: 16px;
   border-radius: 12px;
   box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
 }
 input, select {
   width: 100%;
@@ -98,7 +113,7 @@ input, select {
 label {
   margin-top: 8px; 
   display: block;
-  color: black;
+  color: white;
 }
 button[type="submit"] {
   width: 100%;
@@ -114,5 +129,27 @@ button[type="submit"] {
 
 button[type="submit"]:hover {
   background-color: #444; /* slightly darker gray */
+}
+.floor-button-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.floor-button-group button {
+  background-color: #eee;
+  color: #333;
+  border: 1px solid #ccc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.floor-button-group button.selected {
+  background-color: #333;
+  color: white;
+  border-color: #333;
 }
 </style>
