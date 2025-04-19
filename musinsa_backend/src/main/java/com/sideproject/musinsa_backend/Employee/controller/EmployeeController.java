@@ -8,10 +8,9 @@ import com.sideproject.musinsa_backend.Employee.service.EmployeeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,8 +44,25 @@ public class EmployeeController {
 
         Map<String, Object> loginInfo = new HashMap<>();
         loginInfo.put("id", employee.getId());
-        loginInfo.put("toekn", jwtToken);
+        loginInfo.put("token", jwtToken);
         return new ResponseEntity<>(loginInfo, HttpStatus.OK);
     }
 
+    //내 정보 조회하기
+    @GetMapping("/myInfo")
+    public ResponseEntity<?> getMyInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        String email = authentication.getName(); // 로그인한 사용자의 이메일
+        Employee employee = employeeService.findByEmail(email);
+
+        Map<String, Object> info = new HashMap<>();
+        info.put("id", employee.getId());
+        info.put("name", employee.getName());
+        info.put("email", employee.getEmail());
+        info.put("position", employee.getPosition());
+        info.put("floor", employee.getFloor());
+
+        return ResponseEntity.ok(info);
+    }
 }
