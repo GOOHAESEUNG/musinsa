@@ -5,7 +5,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import SignupPage from '@/pages/SignupPage.vue'
 // 나중에 LoginPage도 추가 가능
 import HomePage from '@/pages/HomePage.vue'
-
+import LoginPage from '@/pages/LoginPage.vue'
 
 const routes = [
   {
@@ -17,7 +17,10 @@ const routes = [
       path: '/',
       name: 'Home',
       component: HomePage
-    }
+    },
+    { path: '/login', 
+    name: 'Login', 
+    component: LoginPage },
 ]
 
 const router = createRouter({
