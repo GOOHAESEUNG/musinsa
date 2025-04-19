@@ -34,8 +34,9 @@ const submitForm = async () => {
   try {
     const response = await axios.post('/employee/doLogin', form.value)
     const token = response.data.token
+    console.log('로그인 성공! token:', token) // ✅ 이거 찍히는지 확인
     localStorage.setItem('token', token)
-    router.push('/') // 로그인 후 홈으로 이동
+    router.push('/myInfo') // 로그인 후 내 정보 페이지로 이동
   } catch (error) {
     errorMessage.value = error.response?.data?.message || '로그인에 실패했습니다.'
   }
