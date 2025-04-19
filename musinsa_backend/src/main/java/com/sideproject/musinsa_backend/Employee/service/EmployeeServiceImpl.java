@@ -2,11 +2,14 @@ package com.sideproject.musinsa_backend.Employee.service;
 
 import com.sideproject.musinsa_backend.Employee.domain.Employee;
 import com.sideproject.musinsa_backend.Employee.domain.Position;
+import com.sideproject.musinsa_backend.Employee.dto.EmployeeLoginDto;
 import com.sideproject.musinsa_backend.Employee.dto.EmployeeSaveDto;
 import com.sideproject.musinsa_backend.Employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,5 +37,16 @@ public class EmployeeServiceImpl implements EmployeeService {
 
         Employee savedEmployee = employeeRepository.save(newEmployee);
         return savedEmployee;
+    }
+
+    @Override
+    public Employee login(EmployeeLoginDto dto) {
+        Employee employee = employeeRepository.findByEmail(dto.getEmail())
+                .orElseThrow(() -> new IllegalArgumentException("존자하지 않은 이메일 입니다."));
+
+        if(!passwordEncoder.matches(dto.getPassword(), employee.getPassword())){
+            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+        }
+        return employee;
     }
 }
