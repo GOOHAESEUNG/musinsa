@@ -1,8 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+
 // 페이지 컴포넌트 import
 import SignupPage from '@/pages/SignupPage.vue'
 // 나중에 LoginPage도 추가 가능
+import HomePage from '@/pages/HomePage.vue'
+
 
 const routes = [
   {
@@ -10,11 +13,11 @@ const routes = [
     name: 'Signup',
     component: SignupPage
   },
-  // {
-  //   path: '/login',
-  //   name: 'Login',
-  //   component: LoginPage
-  // }
+    {
+      path: '/',
+      name: 'Home',
+      component: HomePage
+    }
 ]
 
 const router = createRouter({
