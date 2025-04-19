@@ -4,6 +4,8 @@ import com.sideproject.musinsa_backend.Employee.domain.Employee;
 import com.sideproject.musinsa_backend.Employee.domain.Position;
 import com.sideproject.musinsa_backend.Employee.dto.EmployeeLoginDto;
 import com.sideproject.musinsa_backend.Employee.dto.EmployeeSaveDto;
+import com.sideproject.musinsa_backend.Employee.exception.EmployeeNotFoundException;
+import com.sideproject.musinsa_backend.Employee.exception.InvalidPasswordException;
 import com.sideproject.musinsa_backend.Employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,10 +44,10 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Override
     public Employee login(EmployeeLoginDto dto) {
         Employee employee = employeeRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("존자하지 않은 이메일 입니다."));
+                .orElseThrow(() -> new EmployeeNotFoundException("존자하지 않은 이메일 입니다."));
 
         if(!passwordEncoder.matches(dto.getPassword(), employee.getPassword())){
-            throw new IllegalArgumentException("비밀번호가 올바르지 않습니다.");
+            throw new InvalidPasswordException("비밀번호가 올바르지 않습니다.");
         }
         return employee;
     }
