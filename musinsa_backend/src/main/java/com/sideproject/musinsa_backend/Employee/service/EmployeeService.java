@@ -8,4 +8,5 @@ public interface EmployeeService {
 
     Employee create(EmployeeSaveDto employeeSaveDto);
     Employee login(EmployeeLoginDto employeeLoginDto);
+    Employee findByEmail(String email);
 }

@@ -51,4 +51,11 @@ public class EmployeeServiceImpl implements EmployeeService {
         }
         return employee;
     }
+
+    @Override
+    public Employee findByEmail(String email) {
+        Employee employee = employeeRepository.findByEmail(email)
+                .orElseThrow(() -> new EmployeeNotFoundException(email));
+        return employee;
+    }
 }
