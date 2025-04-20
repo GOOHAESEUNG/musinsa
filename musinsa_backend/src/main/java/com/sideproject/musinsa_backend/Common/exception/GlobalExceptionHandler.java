@@ -2,6 +2,7 @@ package com.sideproject.musinsa_backend.Common.exception;
 
 import com.sideproject.musinsa_backend.Chatting.exception.ChatParticipantNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatRoomNotFoundException;
+import com.sideproject.musinsa_backend.Chatting.exception.GroupRoomUnauthorizedException;
 import com.sideproject.musinsa_backend.Employee.exception.EmployeeNotFoundException;
 import com.sideproject.musinsa_backend.Employee.exception.InvalidPasswordException;
 import org.springframework.http.HttpStatus;
@@ -53,5 +54,13 @@ public class GlobalExceptionHandler {
         response.put("error", "Chat Participant Not Found");
         response.put("message", e.getMessage());
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(GroupRoomUnauthorizedException.class)
+    public ResponseEntity<Map<String, Object>> handleGroupRoomUnauthorized(GroupRoomUnauthorizedException e) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("error", "Group Room Unauthorized");
+        response.put("message", e.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
 }
