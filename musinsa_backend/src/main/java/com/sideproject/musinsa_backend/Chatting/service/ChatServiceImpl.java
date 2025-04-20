@@ -68,6 +68,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
 
+    @Override
     //    단체 채팅방 생성
     public void createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor) {
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
@@ -82,13 +83,20 @@ public class ChatServiceImpl implements ChatService {
             throw new GroupRoomUnauthorizedException("해당 직책은 단체 채팅방을 생성할 수 없습니다.");
         }
 
-//        채팅방 생성
-        ChatRoom chatRoom = ChatRoom.builder()
+// 채팅방 생성
+        ChatRoom.ChatRoomBuilder chatRoomBuilder = ChatRoom.builder()
                 .name(chatRoomName)
                 .chatRoomType(chatRoomtype)
-                .isGroupChat("Y")
-                .build();
+                .isGroupChat("Y");
+
+// ChatRoomType이 FLOOR일 경우에만 floor 값 세팅
+        if (chatRoomtype.equals(ChatRoomType.FLOOR)) {
+            chatRoomBuilder.floor(floor);
+        }
+
+        ChatRoom chatRoom = chatRoomBuilder.build();
         chatRoomRepository.save(chatRoom);
+
 
 //층별 채팅방일 경우
         if (chatRoomtype.equals(ChatRoomType.FLOOR)) {
