@@ -2,6 +2,7 @@ package com.sideproject.musinsa_backend.Chatting.service;
 
 import com.sideproject.musinsa_backend.Chatting.domain.*;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageReqDto;
+import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatParticipantNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatRoomNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.exception.GroupRoomUnauthorizedException;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -148,5 +150,27 @@ public class ChatServiceImpl implements ChatService {
 
         }
 
+    }
+
+    @Override
+    public List<ChatRoomResDto> getMyGroupChatRooms(){
+        List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
+
+        List<ChatRoomResDto> chatRoomResDtos = new ArrayList<>();
+
+        for(ChatRoom c : chatRooms){
+            ChatRoomResDto dto = ChatRoomResDto
+                    .builder()
+                    .roomId(c.getId())
+                    .roomName(c.getName())
+                    .isGroupChat(c.getIsGroupChat())
+                    .chatRoomType(c.getChatRoomType())
+                    .floor(c.getFloor())
+                    .build();
+
+            chatRoomResDtos.add(dto);
+        }
+
+        return chatRoomResDtos;
     }
 }

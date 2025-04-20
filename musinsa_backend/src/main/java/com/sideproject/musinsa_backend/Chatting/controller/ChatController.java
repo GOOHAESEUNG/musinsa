@@ -1,5 +1,6 @@
 package com.sideproject.musinsa_backend.Chatting.controller;
 
+import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
 import com.sideproject.musinsa_backend.Chatting.service.ChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
