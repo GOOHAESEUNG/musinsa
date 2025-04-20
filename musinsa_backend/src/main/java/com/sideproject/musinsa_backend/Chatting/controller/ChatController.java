@@ -1,6 +1,7 @@
 package com.sideproject.musinsa_backend.Chatting.controller;
 
 import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
+import com.sideproject.musinsa_backend.Chatting.dto.CreateGroupRoomReqDto;
 import com.sideproject.musinsa_backend.Chatting.service.ChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ public final class ChatController {
 
     @GetMapping("/rooms/my")
     public ResponseEntity<List<ChatRoomResDto>> getMyChatRooms() {
-        List<ChatRoomResDto> chatRooms = chatService.getMyChatRooms();
+        List<ChatRoomResDto> chatRooms = chatService.getMyGroupChatRooms();
         return ResponseEntity.ok(chatRooms);
     }
 

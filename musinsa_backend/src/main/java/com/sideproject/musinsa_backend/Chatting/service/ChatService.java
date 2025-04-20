@@ -9,6 +9,6 @@ import java.util.List;
 public interface ChatService {
 
     void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto);
-    void createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor);
+    Long createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor);
     List<ChatRoomResDto> getMyGroupChatRooms();
 }

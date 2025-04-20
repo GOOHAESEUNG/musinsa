@@ -3,7 +3,6 @@ package com.sideproject.musinsa_backend.Chatting.service;
 import com.sideproject.musinsa_backend.Chatting.domain.*;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageReqDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
-import com.sideproject.musinsa_backend.Chatting.exception.ChatParticipantNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatRoomNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.exception.GroupRoomUnauthorizedException;
 import com.sideproject.musinsa_backend.Chatting.repository.ChatMessageRepository;
@@ -31,7 +30,6 @@ public class ChatServiceImpl implements ChatService {
     private final ChatMessageRepository chatMessageRepository;
     private final ReadStatusRepository readStatusRepository;
     private final EmployeeRepository employeeRepository;
-    private final ChatService chatService;
 
 
     @Override
@@ -72,7 +70,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     //    단체 채팅방 생성
-    public void createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor) {
+    public Long createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor) {
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
                 .orElseThrow(() -> new EmployeeNotFoundException("존재하지 않은 회원입니다."));
 
@@ -150,6 +148,7 @@ public class ChatServiceImpl implements ChatService {
 
         }
 
+        return chatRoom.getId();
     }
 
     @Override
