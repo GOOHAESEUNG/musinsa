@@ -1,6 +1,6 @@
 package com.sideproject.musinsa_backend.Chatting.controller;
 
-import com.sideproject.musinsa_backend.Chatting.dto.ChetMessageReqDto;
+import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageReqDto;
 import com.sideproject.musinsa_backend.Chatting.service.ChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -17,7 +17,7 @@ public class StompController {
 
     @MessageMapping("/{roomId}")
     public void sendMessage(@PathVariable Long roomId,
-                            ChetMessageReqDto chatMessageReqDto) {
+                            ChatMessageReqDto chatMessageReqDto) {
         System.out.println(chatMessageReqDto.getMessage());
         chatService.saveMessage(roomId, chatMessageReqDto);
         chatMessageReqDto.setRoomId(roomId);
