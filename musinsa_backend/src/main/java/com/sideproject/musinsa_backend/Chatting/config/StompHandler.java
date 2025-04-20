@@ -15,6 +15,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Base64;
 
+
+//웹소켓 연결 요청(CONNECT)이 들어올 때 HTTP처럼 JWT 토큰을 검증하는 인터셉터
 @Component
 public class StompHandler implements ChannelInterceptor {
 
@@ -38,7 +40,6 @@ public class StompHandler implements ChannelInterceptor {
 
         final StompHeaderAccessor accessor = StompHeaderAccessor.wrap(message);
 
-        //웹소켓 연결 요청(CONNECT)이 들어올 때 HTTP처럼 JWT 토큰을 검증하는 인터셉터
         if(StompCommand.CONNECT == accessor.getCommand()) {
             System.out.println("connect 요청시 토큰 유효성 검증");
             String bearerToken = accessor.getFirstNativeHeader("Authorization");
