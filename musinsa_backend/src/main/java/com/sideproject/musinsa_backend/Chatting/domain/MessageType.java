@@ -1,6 +1,6 @@
 package com.sideproject.musinsa_backend.Chatting.domain;
 
-enum MessageType {
+public enum MessageType {
     GENERAL,
     REQUEST
 }

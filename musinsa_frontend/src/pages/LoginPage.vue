@@ -20,6 +20,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
+import { jwtDecode } from 'jwt-decode'
 
 const router = useRouter()
 
@@ -34,9 +35,10 @@ const submitForm = async () => {
   try {
     const response = await axios.post('/employee/doLogin', form.value)
     const token = response.data.token
-    console.log('로그인 성공! token:', token) // ✅ 이거 찍히는지 확인
+    const email = jwtDecode(token).sub // 이메일을 JWT에서 추출
     localStorage.setItem('token', token)
-    router.push('/myInfo') // 로그인 후 내 정보 페이지로 이동
+    localStorage.setItem('email', email)
+    router.push('/myInfo')
   } catch (error) {
     errorMessage.value = error.response?.data?.message || '로그인에 실패했습니다.'
   }

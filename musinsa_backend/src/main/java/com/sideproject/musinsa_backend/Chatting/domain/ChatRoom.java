@@ -34,6 +34,9 @@ public class ChatRoom extends BaseTimeEntity {
     @Builder.Default
     private ChatRoomType chatRoomType = ChatRoomType.NOTICE;
 
+    //채팅방 소속 층
+    private String floor;
+
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.REMOVE)
     private List<ChatParticipant> chatParticipants = new ArrayList<>();
 
