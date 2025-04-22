@@ -1,6 +1,7 @@
 package com.sideproject.musinsa_backend.Chatting.service;
 
 import com.sideproject.musinsa_backend.Chatting.domain.*;
+import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageHisDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageReqDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatRoomNotFoundException;
@@ -152,6 +153,7 @@ public class ChatServiceImpl implements ChatService {
         return chatRoom.getId();
     }
 
+    //그룹 채팅방 목록
     @Override
     public List<ChatRoomResDto> getMyGroupChatRooms(){
         List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
@@ -172,5 +174,49 @@ public class ChatServiceImpl implements ChatService {
         }
 
         return chatRoomResDtos;
+    }
+
+
+    //채팅 이전 기록 가져오기
+    @Override
+    public List<ChatMessageHisDto> getChatHistory(Long roomId){
+
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원입니다."));
+
+        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
+
+        Boolean check = false;
+
+        for(ChatParticipant c : chatParticipants) {
+            if (c.getEmpolyee().equals(employee)) {
+                check = true;
+            }
+        }
+            if(!check){
+                throw new EmployeeNotFoundException("본인이 속한 채팅방이 아닙니다.");
+            }
+
+//            특정 룸에 대한 메시지 조회
+        List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreateTimeAsc(chatRoom);
+
+            List<ChatMessageHisDto> chatMessageHisDtos = new ArrayList<>();
+
+            for(ChatMessage c : chatMessages){
+                ChatMessageHisDto chatMessageHisDto = ChatMessageHisDto.builder()
+                        .message(c.getContent())
+                        .senderEmail(c.getEmployee().getEmail())
+                        .messageType(c.getMessageType())
+                        .senderName(c.getEmployee().getName())
+                        .build();
+
+                chatMessageHisDtos.add(chatMessageHisDto);
+            }
+
+            return chatMessageHisDtos;
+
     }
 }
