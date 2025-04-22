@@ -48,6 +48,7 @@ public class ChatServiceImpl implements ChatService {
                 .chatRoom(chatRoom)
                 .employee(sender)
                 .content(chatMessageReqDto.getMessage())
+                .messageType(chatMessageReqDto.getMessageType())
                 .build();
 
         chatMessageRepository.save(chatMessage);
