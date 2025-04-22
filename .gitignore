@@ -19,3 +19,8 @@ bin/
 *.properties
 **/.env
 **/application.properties
+
+# 캐시 디렉토리 무시
+node_modules/.cache/
+# 모든 node_modules 하위 캐시 폴더 무시
+**/.cache/

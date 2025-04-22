@@ -193,10 +193,14 @@ onUnmounted(() => {
 .chat-message {
   padding: 10px 14px;
   border-radius: 12px;
-  max-width: 60%;
+  max-width: 400px;
   font-size: 13px;
   line-height: 1.6;
   box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  background-color: #f1f1f1;
 }
 
 .sent {
@@ -235,6 +239,8 @@ onUnmounted(() => {
   display: flex;
   align-items: flex-end;
   gap: 6px;
+  max-width: 100%;
+  flex-wrap: nowrap;
 }
 
 .sent-line {

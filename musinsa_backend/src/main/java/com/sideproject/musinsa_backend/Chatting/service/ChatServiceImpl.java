@@ -193,21 +193,6 @@ public class ChatServiceImpl implements ChatService {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
 
-        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원입니다."));
-
-        List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
-
-        Boolean check = false;
-
-        for(ChatParticipant c : chatParticipants) {
-            if (c.getEmpolyee().equals(employee)) {
-                check = true;
-            }
-        }
-            if(!check){
-                throw new EmployeeNotFoundException("본인이 속한 채팅방이 아닙니다.");
-            }
 
 //            특정 룸에 대한 메시지 조회
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreateTimeAsc(chatRoom);
