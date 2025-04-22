@@ -6,8 +6,21 @@
     </header>
 
     <div class="chat-messages">
-      <div v-for="(msg, index) in messages" :key="index">
-        <strong>{{ msg.senderEmail }}:</strong> {{ msg.message }}
+      <div
+        v-for="(msg, index) in messages"
+        :key="index"
+        class="chat-message-wrapper"
+        :class="msg.senderEmail === myEmail ? 'sent-wrapper' : 'received-wrapper'"
+      >
+        <div v-if="msg.senderEmail !== myEmail" class="sender-name">{{ msg.senderName }}</div>
+        <div
+          :class="[
+            'chat-message',
+            msg.senderEmail === myEmail ? 'sent' : 'received'
+          ]"
+        >
+          <div class="message-text">{{ msg.message }}</div>
+        </div>
       </div>
     </div>
 
@@ -38,6 +51,8 @@ const roomId = route.params.roomId
 const newMessage = ref('')
 const messages = ref([])
 
+const myEmail = localStorage.getItem('email') || ''
+
 const sendMessage = () => {
   if (newMessage.value.trim() === '') return
 
@@ -61,7 +76,7 @@ const goBack = () => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/chat/rooms/${roomId}/messages`, {
+    const response = await axios.get(`/api/chat/history/${roomId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -95,24 +110,90 @@ onUnmounted(() => {
 }
 
 .chat-messages {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   border: 1px solid #ddd;
   padding: 12px;
   background-color: #fafafa;
   margin-bottom: 12px;
+  overflow-y: auto;
 }
 
 .chat-input-area {
   display: flex;
   gap: 8px;
+  padding: 12px;
+  background-color: #ffffff;
+  border-top: 1px solid #ddd;
 }
 
 .chat-input {
   flex: 1;
-  padding: 8px;
+  padding: 10px 14px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+}
+
+.chat-input:focus {
+  border-color: #222;
 }
 
 .send-button {
-  padding: 8px 12px;
+  padding: 10px 16px;
+  font-size: 14px;
+  border: none;
+  background-color: #444;
+  color: #fff;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.send-button:hover {
+  background-color: #222;
+}
+
+.chat-message {
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 60%;
+  font-size: 13px;
+  line-height: 1.6;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+.sent {
+  background-color: #e6f0ff; /* 연파랑 */
+}
+
+.received {
+  background-color: #f1f1f1; /* 연회색 */
+}
+
+.chat-message-wrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+}
+
+.sender-name {
+  font-size: 0.75rem;
+  color: #666;
+  margin: 0 8px 2px;
+}
+
+.sent-wrapper {
+  align-items: flex-end;
+}
+
+.received-wrapper {
+  align-items: flex-start;
+}
+
+.message-text {
+  white-space: pre-wrap;
 }
 </style>
