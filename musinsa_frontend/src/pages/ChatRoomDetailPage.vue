@@ -5,7 +5,7 @@
       <h2>{{ roomId }}번 채팅방</h2>
     </header>
 
-    <div class="chat-messages">
+    <div class="chat-messages" ref="chatMessagesRef">
       <div
         v-for="(msg, index) in messages"
         :key="index"
@@ -22,7 +22,7 @@
           >
             <div class="message-text">{{ msg.message }}</div>
           </div>
-          <div class="message-time-inline">{{ formatTime(msg.sendDate) }}</div>
+          <div class="message-time-inline aligned">{{ formatTime(msg.sendDate) }}</div>
         </div>
         <!--
         <div
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import {
@@ -62,6 +62,8 @@ const roomId = route.params.roomId
 const newMessage = ref('')
 const messages = ref([])
 
+const chatMessagesRef = ref(null)
+
 const myEmail = localStorage.getItem('email') || ''
 
 const sendMessage = () => {
@@ -69,7 +71,7 @@ const sendMessage = () => {
 
   const messageDto = {
     message: newMessage.value,
-    senderEmail: localStorage.getItem('email'), 
+    senderEmail: localStorage.getItem('email'),
     messageType: "GENERAL",
   }
 
@@ -77,8 +79,17 @@ const sendMessage = () => {
   newMessage.value = ''
 }
 
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (chatMessagesRef.value) {
+      chatMessagesRef.value.scrollTop = chatMessagesRef.value.scrollHeight
+    }
+  })
+}
+
 const onMessageReceived = (message) => {
   messages.value.push(message)
+  scrollToBottom()
 }
 
 const goBack = () => {
@@ -104,6 +115,7 @@ onMounted(async () => {
       }
     })
     messages.value = response.data
+    scrollToBottom()
   } catch (error) {
     console.error('기존 메시지 로드 실패:', error)
   }
@@ -235,11 +247,16 @@ onUnmounted(() => {
   flex-direction: row;
 }
 
-.message-time-inline {
-  font-size: 0.7rem;
-  color: #999;
-  white-space: nowrap;
-  margin: 0 6px;
+ .message-time-inline {
+   font-size: 0.7rem;
+   color: #999;
+   white-space: nowrap;
+   margin: 0 6px;
+ }
+
+.message-time-inline.aligned {
+  align-self: flex-end;
+  margin-bottom: 2px;
 }
 
 /*

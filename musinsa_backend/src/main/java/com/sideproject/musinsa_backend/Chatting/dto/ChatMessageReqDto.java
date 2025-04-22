@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 
 import java.awt.*;
+import java.time.LocalDateTime;
 
 @Data
 @AllArgsConstructor
@@ -15,5 +16,4 @@ public class ChatMessageReqDto {
     private String message;
     private String senderEmail;
     private MessageType messageType;
-
 }

@@ -2,6 +2,7 @@ package com.sideproject.musinsa_backend.Chatting.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.sideproject.musinsa_backend.Chatting.domain.ChatRoom;
+import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageHisDto;
 import com.sideproject.musinsa_backend.Chatting.exception.ChatRoomNotFoundException;
 import com.sideproject.musinsa_backend.Chatting.repository.ChatRoomRepository;
 import com.sideproject.musinsa_backend.Chatting.domain.ChatRoomType;
@@ -36,8 +37,8 @@ public class StompController {
             // TODO: handle product request message logic
         }
 
-        chatService.saveMessage(roomId, chatMessageReqDto);
+       ChatMessageHisDto chatMessageHisDto = chatService.saveMessage(roomId, chatMessageReqDto);
 
-        messagingTemplate.convertAndSend("/topic/" + roomId, chatMessageReqDto);
+        messagingTemplate.convertAndSend("/topic/" + roomId, chatMessageHisDto);
     }
 }

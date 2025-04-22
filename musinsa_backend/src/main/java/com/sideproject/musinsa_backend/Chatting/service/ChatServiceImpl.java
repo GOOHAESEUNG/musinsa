@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -34,7 +35,7 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public void saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto) {
+    public ChatMessageHisDto saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto) {
 
 //         채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -54,6 +55,14 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(chatMessage);
 
+        ChatMessageHisDto chatMessageHisDto = ChatMessageHisDto.builder()
+                .message(chatMessage.getContent())
+                .senderEmail(sender.getEmail())
+                .senderName(sender.getName())
+                .messageType(chatMessage.getMessageType())
+                .sendDate(chatMessage.getCreateTime())
+                .build();
+
 
 //        사용자별 읽음 처리
         List<ChatParticipant> chatParticipants = chatParticipantRepository.findByChatRoom(chatRoom);
@@ -62,11 +71,11 @@ public class ChatServiceImpl implements ChatService {
                     .chatRoom(chatRoom)
                     .empolyee(c.getEmpolyee())
                     .chatMessage(chatMessage)
-                    .isRead(c.getEmpolyee().equals(sender))
+                    .isRead(c.getEmpolyee().getId().equals(sender.getId()))
                     .build();
             readStatusRepository.save(readStatus);
         }
-
+        return chatMessageHisDto;
     }
 
 
