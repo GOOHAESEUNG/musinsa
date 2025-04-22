@@ -1,9 +1,9 @@
 <template>
-  <div>
+  <div class="layout-container">
     <header class="app-header">
       <button @click="goTo('/chat/rooms')">채팅방 목록</button>
       <button @click="goTo('/chat/create')">채팅방 생성</button>
-      <button @click="goTo('/my-info')">내 정보</button>
+      <button @click="goTo('/myInfo')">내 정보</button>
     </header>
 
     <main>
@@ -22,6 +22,31 @@ const goTo = (path) => {
 </script>
 
 <style scoped>
+:root {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#app {
+  margin: 0;
+  padding: 0;
+}
+
+.layout-container {
+  margin: 0;
+  padding: 0;
+}
+
+main {
+  margin: 0;
+  padding: 0;
+}
+
 .app-header {
   background-color: black;
   color: white;

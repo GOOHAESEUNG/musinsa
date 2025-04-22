@@ -1,12 +1,12 @@
 
 
 <template>
-  <div>
+  <div class="create-chat-room-page">
     <h1>채팅방 생성</h1>
     <form @submit.prevent="submitForm">
       <label>채팅방 이름:</label>
       <input v-model="form.roomName" type="text" required />
-      
+
       <label>채팅방 유형:</label>
       <select v-model="form.chatRoomType" required>
         <option disabled value="">선택하세요</option>
@@ -15,10 +15,15 @@
         <option value="PROREQ">상품 요청방</option>
         <option value="PRIVATE">사담방</option>
       </select>
-      
-      <label>층 정보:</label>
-      <input v-model="form.floor" type="text" placeholder="예: 2F" />
-      
+
+      <label v-if="form.chatRoomType === 'FLOOR'">층 정보:</label>
+      <input
+        v-if="form.chatRoomType === 'FLOOR'"
+        v-model="form.floor"
+        type="text"
+        placeholder="예: 2F"
+      />
+
       <button type="submit">생성하기</button>
     </form>
   </div>
@@ -52,3 +57,55 @@ const submitForm = async () => {
   }
 }
 </script>
+
+<style scoped>
+.create-chat-room-page {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.create-chat-room-page h1 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #333;
+}
+
+.create-chat-room-page form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.create-chat-room-page label {
+  font-weight: bold;
+  margin-bottom: 4px;
+  color: #444;
+}
+
+.create-chat-room-page input,
+.create-chat-room-page select {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.create-chat-room-page button {
+  background-color: #333;
+  color: #fff;
+  border: none;
+  padding: 12px;
+  font-size: 15px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.create-chat-room-page button:hover {
+  background-color: #222;
+}
+</style>
