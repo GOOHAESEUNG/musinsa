@@ -1,7 +1,7 @@
 <template>
   <div class="chat-room-container">
     <header class="chat-header">
-      <button @click="goBack">뒤로가기</button>
+      <button @click="goBack" class="back-button">←</button>
       <h2>{{ roomId }}번 채팅방</h2>
     </header>
 
@@ -13,14 +13,25 @@
         :class="msg.senderEmail === myEmail ? 'sent-wrapper' : 'received-wrapper'"
       >
         <div v-if="msg.senderEmail !== myEmail" class="sender-name">{{ msg.senderName }}</div>
-        <div
-          :class="[
-            'chat-message',
-            msg.senderEmail === myEmail ? 'sent' : 'received'
-          ]"
-        >
-          <div class="message-text">{{ msg.message }}</div>
+        <div class="message-line" :class="msg.senderEmail === myEmail ? 'sent-line' : 'received-line'">
+          <div
+            :class="[
+              'chat-message',
+              msg.senderEmail === myEmail ? 'sent' : 'received'
+            ]"
+          >
+            <div class="message-text">{{ msg.message }}</div>
+          </div>
+          <div class="message-time-inline">{{ formatTime(msg.sendDate) }}</div>
         </div>
+        <!--
+        <div
+          v-if="index === messages.length - 1 || !isSameSendTime(msg.sendDate, messages[index + 1]?.sendDate)"
+          class="message-time"
+        >
+          {{ formatTime(msg.sendDate) }}
+        </div>
+        -->
       </div>
     </div>
 
@@ -74,6 +85,17 @@ const goBack = () => {
   router.back()
 }
 
+const formatTime = (datetime) => {
+  if (!datetime) {
+    console.warn('formatTime: datetime is undefined or null')
+    return ''
+  }
+  console.log('Formatting time for:', datetime)
+  const date = new Date(datetime)
+  return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false })
+}
+
+
 onMounted(async () => {
   try {
     const response = await axios.get(`/api/chat/history/${roomId}`, {
@@ -112,7 +134,7 @@ onUnmounted(() => {
 .chat-messages {
   display: flex;
   flex-direction: column;
-  flex: 1;
+  height: 400px;
   border: 1px solid #ddd;
   padding: 12px;
   background-color: #fafafa;
@@ -196,4 +218,61 @@ onUnmounted(() => {
 .message-text {
   white-space: pre-wrap;
 }
-</style>
+
+.message-line {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.sent-line {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+}
+
+.received-line {
+  justify-content: flex-start;
+  flex-direction: row;
+}
+
+.message-time-inline {
+  font-size: 0.7rem;
+  color: #999;
+  white-space: nowrap;
+  margin: 0 6px;
+}
+
+/*
+.sent-time {
+  align-self: flex-end;
+}
+
+.received-time {
+  align-self: flex-start;
+}
+*/
+
+/*
+.message-time {
+  font-size: 0.7rem;
+  color: #999;
+  margin-top: 4px;
+  text-align: right;
+}
+*/
+
+.back-button {
+  padding: 6px 12px;
+  font-size: 14px;
+  background-color: #f2f2f2;
+  border: 1px solid #ccc;
+  color: #333;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.back-button:hover {
+  background-color: #e0e0e0;
+}
+</style> 
