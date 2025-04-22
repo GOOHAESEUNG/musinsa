@@ -211,6 +211,7 @@ public class ChatServiceImpl implements ChatService {
                         .senderEmail(c.getEmployee().getEmail())
                         .messageType(c.getMessageType())
                         .senderName(c.getEmployee().getName())
+                        .sendDate(c.getCreateTime())
                         .build();
 
                 chatMessageHisDtos.add(chatMessageHisDto);
