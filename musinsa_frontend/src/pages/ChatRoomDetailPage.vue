@@ -2,7 +2,10 @@
   <div class="chat-room-container">
     <header class="chat-header">
       <button @click="goBack" class="back-button">←</button>
-      <h2>{{ roomId }}번 채팅방</h2>
+      <div class="header-title">
+        <h2 v-if="roomName">{{ roomName }}</h2>
+        <p class="chat-subtitle" v-if="chatRoomTypeLabel">{{ chatRoomTypeLabel }}</p>
+      </div>
     </header>
 
     <div class="chat-messages" ref="chatMessagesRef">
@@ -47,7 +50,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import {
@@ -65,6 +68,23 @@ const messages = ref([])
 const chatMessagesRef = ref(null)
 
 const myEmail = localStorage.getItem('email') || ''
+
+const roomName = ref('') // to be filled from API
+const chatRoomType = ref('') // raw value from API
+const chatRoomTypeLabel = computed(() => {
+  switch (chatRoomType.value) {
+    case 'FLOOR':
+      return '층별 채팅방'
+    case 'NOTICE':
+      return '공지방'
+    case 'PROREQ':
+      return '상품 요청방'
+    case 'PRIVATE':
+      return '사담방'
+    default:
+      return ''
+  }
+})
 
 const sendMessage = () => {
   if (newMessage.value.trim() === '') return
@@ -115,6 +135,18 @@ onMounted(async () => {
       }
     })
     messages.value = response.data
+
+    const metaResponse = await axios.get('/api/chat/rooms/my', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    const matchedRoom = metaResponse.data.find(r => String(r.roomId) === String(roomId))
+    if (matchedRoom) {
+      roomName.value = matchedRoom.roomName
+      chatRoomType.value = matchedRoom.chatRoomType
+    }
+
     scrollToBottom()
   } catch (error) {
     console.error('기존 메시지 로드 실패:', error)
@@ -137,10 +169,42 @@ onUnmounted(() => {
 }
 
 .chat-header {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
+  justify-content: center;
   margin-bottom: 12px;
+}
+
+.header-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.chat-header h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-subtitle {
+  font-size: 0.75rem;
+  color: #777;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-subtitle {
+  font-size: 0.8rem;
+  color: #777;
+  margin-top: 2px;
 }
 
 .chat-messages {
@@ -285,6 +349,8 @@ onUnmounted(() => {
 */
 
 .back-button {
+  position: absolute;
+  left: 0;
   padding: 6px 12px;
   font-size: 14px;
   background-color: #f2f2f2;
@@ -298,4 +364,4 @@ onUnmounted(() => {
 .back-button:hover {
   background-color: #e0e0e0;
 }
-</style> 
+</style>
