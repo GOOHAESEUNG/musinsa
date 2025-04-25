@@ -17,8 +17,10 @@ import com.sideproject.musinsa_backend.Employee.exception.EmployeeNotFoundExcept
 import com.sideproject.musinsa_backend.Employee.exception.InvalidPasswordException;
 import com.sideproject.musinsa_backend.Employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -28,6 +30,7 @@ import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ChatServiceImpl implements ChatService {
 
     private final ChatRoomRepository chatRoomRepository;
@@ -163,10 +166,10 @@ public class ChatServiceImpl implements ChatService {
 
     //그룹 채팅방 목록
     @Override
-    public List<ChatRoomResDto> getMyGroupChatRooms(){
+    public List<ChatRoomResDto> getMyGroupChatRooms() {
         //현재 유저의 정보를 받아옴
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
+                .orElseThrow(() -> new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
 
         //반환 객체 생성
         List<ChatRoomResDto> chatRoomResDtos = new ArrayList<>();
@@ -174,69 +177,69 @@ public class ChatServiceImpl implements ChatService {
         //그룹 채팅방만 리스트로 가져옴
         List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
 
-        for(ChatRoom c : chatRooms){
-                boolean isParticipant = chatParticipantRepository.existsByChatRoomAndEmployee(c, employee);
+        for (ChatRoom c : chatRooms) {
+            boolean isParticipant = chatParticipantRepository.existsByChatRoomAndEmployee(c, employee);
 
-                    ChatRoomResDto dto = ChatRoomResDto
-                            .builder()
-                            .roomId(c.getId())
-                            .roomName(c.getName())
-                            .isGroupChat(c.getIsGroupChat())
-                            .chatRoomType(c.getChatRoomType())
-                            .floor(c.getFloor())
-                            .isParticipant(isParticipant)
-                            .build();
+            ChatRoomResDto dto = ChatRoomResDto
+                    .builder()
+                    .roomId(c.getId())
+                    .roomName(c.getName())
+                    .isGroupChat(c.getIsGroupChat())
+                    .chatRoomType(c.getChatRoomType())
+                    .floor(c.getFloor())
+                    .isParticipant(isParticipant)
+                    .build();
 
-                    chatRoomResDtos.add(dto);
+            chatRoomResDtos.add(dto);
 
-            }
-
-         return chatRoomResDtos;
         }
+
+        return chatRoomResDtos;
+    }
 
 
     //채팅 이전 기록 가져오기
     @Override
-    public List<ChatMessageHisDto> getChatHistory(Long roomId){
+    public List<ChatMessageHisDto> getChatHistory(Long roomId) {
 
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+                .orElseThrow(() -> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
 
 
 //            특정 룸에 대한 메시지 조회
         List<ChatMessage> chatMessages = chatMessageRepository.findByChatRoomOrderByCreateTimeAsc(chatRoom);
 
-            List<ChatMessageHisDto> chatMessageHisDtos = new ArrayList<>();
+        List<ChatMessageHisDto> chatMessageHisDtos = new ArrayList<>();
 
-            for(ChatMessage c : chatMessages){
-                ChatMessageHisDto chatMessageHisDto = ChatMessageHisDto.builder()
-                        .message(c.getContent())
-                        .senderEmail(c.getEmployee().getEmail())
-                        .messageType(c.getMessageType())
-                        .senderName(c.getEmployee().getName())
-                        .sendDate(c.getCreateTime())
-                        .build();
+        for (ChatMessage c : chatMessages) {
+            ChatMessageHisDto chatMessageHisDto = ChatMessageHisDto.builder()
+                    .message(c.getContent())
+                    .senderEmail(c.getEmployee().getEmail())
+                    .messageType(c.getMessageType())
+                    .senderName(c.getEmployee().getName())
+                    .sendDate(c.getCreateTime())
+                    .build();
 
-                chatMessageHisDtos.add(chatMessageHisDto);
-            }
+            chatMessageHisDtos.add(chatMessageHisDto);
+        }
 
-            return chatMessageHisDtos;
+        return chatMessageHisDtos;
 
     }
 
-//    채팅방 참가하기
+    //    채팅방 참가하기
     @Override
-    public void addParticipantToGroupChat(Long roomId){
+    public void addParticipantToGroupChat(Long roomId) {
 //        채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+                .orElseThrow(() -> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
 
 //        현재 로그인한 유저 조회
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(()->new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
+                .orElseThrow(() -> new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
 
 //        그룹 채팅인지 여부 판단
-        if(chatRoom.getIsGroupChat().equals("N")){
+        if (chatRoom.getIsGroupChat().equals("N")) {
             throw new IllegalArgumentException("그룹 채팅이 아닙니다.");
         }
 
@@ -244,12 +247,12 @@ public class ChatServiceImpl implements ChatService {
         Optional<ChatParticipant> participant = chatParticipantRepository.findByChatRoomAndEmployee(chatRoom, employee);
 
 //        참여하지 않은 회원이라면, 참가자에 추가
-        if(!participant.isPresent()){
+        if (!participant.isPresent()) {
             addParticipantToRoom(chatRoom, employee);
         }
     }
 
-    public void addParticipantToRoom(ChatRoom chatRoom, Employee employee){
+    public void addParticipantToRoom(ChatRoom chatRoom, Employee employee) {
         ChatParticipant chatParticipant = ChatParticipant.builder()
                 .chatRoom(chatRoom)
                 .employee(employee)
@@ -258,20 +261,27 @@ public class ChatServiceImpl implements ChatService {
         chatParticipantRepository.save(chatParticipant);
     }
 
-//    메시지 읽음 처리 여부
+    //    메시지 읽음 처리 여부
     @Override
-    public void messageRead(Long roomId){
+    @Transactional
+    public void messageRead(Long roomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
-                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+                .orElseThrow(() -> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
 
         Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
-                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원입니다."));
+                .orElseThrow(() -> new EmployeeNotFoundException("존재하지 않은 회원입니다."));
 
         List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndEmployee(chatRoom, employee);
 
-        for(ReadStatus rs : readStatuses){
-            rs.updateIsRead(true);
+        if (readStatuses == null || readStatuses.isEmpty()) {
+            log.warn("읽음 처리할 메시지가 없음 → roomId: {}, employee: {}", roomId, employee.getEmail());
+            return;
         }
 
+        for (ReadStatus rs : readStatuses) {
+            if (rs != null) {
+                rs.updateIsRead(true);
+            }
+        }
     }
 }

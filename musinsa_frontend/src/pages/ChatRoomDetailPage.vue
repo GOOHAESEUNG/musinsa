@@ -155,8 +155,26 @@ onMounted(async () => {
   connectStompClient(onMessageReceived, roomId)
 })
 
+const disconnectWebSocket = async () => {
+  try {
+    await axios.post(
+      `/api/chat/room/${roomId}/read`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    )
+  } catch (error) {
+    console.error('읽음 처리 실패:', error)
+  } finally {
+    disconnectStompClient()
+  }
+}
+
 onUnmounted(() => {
-  disconnectStompClient()
+  disconnectWebSocket()
 })
 </script>
 
