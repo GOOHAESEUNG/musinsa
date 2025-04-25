@@ -40,5 +40,8 @@ public final class ChatController {
 
     //채팅방 참가하기
     @PostMapping("/room/group/{roomId}/join")
-    public ResponseEntity<?> joinGroupChatRoom(@PathVariable Long roomId)
+    public ResponseEntity<?> joinGroupChatRoom(@PathVariable Long roomId){
+        chatService.addParticipantToGroupChat(roomId);
+        return ResponseEntity.ok().build();
+    }
 }
