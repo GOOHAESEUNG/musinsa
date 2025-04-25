@@ -1,6 +1,7 @@
 package com.sideproject.musinsa_backend.Chatting.service;
 
 import com.sideproject.musinsa_backend.Chatting.domain.*;
+import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageHisDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageReqDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatRoomResDto;
@@ -35,22 +36,22 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public ChatMessageHisDto saveMessage(Long roomId, ChatMessageReqDto chatMessageReqDto) {
+    public void saveMessage(Long roomId, ChatMessageDto chatMessageDto) {
 
 //         채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ChatRoomNotFoundException("존재 하지 않은 채팅방 입니다."));
 
 //        보낸 사람 조회
-        Employee sender = employeeRepository.findByEmail(chatMessageReqDto.getSenderEmail())
+        Employee sender = employeeRepository.findByEmail(chatMessageDto.getSenderEmail())
                 .orElseThrow(() -> new EmployeeNotFoundException("존재하지 않은 회원 입니다."));
 
 //        메시지 저장
         ChatMessage chatMessage = ChatMessage.builder()
                 .chatRoom(chatRoom)
                 .employee(sender)
-                .content(chatMessageReqDto.getMessage())
-                .messageType(chatMessageReqDto.getMessageType())
+                .content(chatMessageDto.getMessage())
+                .messageType(chatMessageDto.getMessageType())
                 .build();
 
         chatMessageRepository.save(chatMessage);
@@ -75,7 +76,6 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             readStatusRepository.save(readStatus);
         }
-        return chatMessageHisDto;
     }
 
 

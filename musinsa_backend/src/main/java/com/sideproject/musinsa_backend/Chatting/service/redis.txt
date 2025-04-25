@@ -1,0 +1,27 @@
+전체 흐름 요약
+
+1. 사용자가 메시지를 입력 후 전송
+
+2. [서버] StompController -> redisPubSubService.publish("chat", message)
+    redis의 chat채널에 발행을 위해 호출
+
+3. [Redis] RedisPubSubService -> publish 메서드 -> stringRedisTemplate.convertAndSend(channel, message)을 통해
+    chat 채널에 메시지 발행
+
+4. [서버] RedisConfig -> RedisMessageListnerContainer가 "채널"을 구독 중이다가 메시지를 받으면 감지함
+    container.addMessageListener(messagelistenerAdapter, new PatternTopic("chat"));
+    ㄴ> 이렇게 메시지를 감지했을 때 메시지를 처리할 메서드를 messageListenerAdapter에 위임해둠
+
+5. [서버] 위임 받은 messageListenrAdatper는
+    return new MessageListenerAdapter(redisPubSubService, "onMessage");
+    ㄴ> 이 코드를 통해 redisPubSubService의 OnMessage에 받은 메시지를 처리하라고 던짐
+
+6. [서버] redisPubSubService -> OnMessage는 redis로 부터 수신된 순수 문자열(JSON)을
+    ChatMessageDto의 자바 객체로 변환 시키고
+    Dto에 포함된 roomId를 통해
+    Stomp 경로를 만들어서
+    해당 방을 구독 중인 클라이언트에게 메시지를 브로드 캐스트함
+
+7. 해당 roomId를 구독 중이면 실시간으로 메시지를 수신 받음
+
+
