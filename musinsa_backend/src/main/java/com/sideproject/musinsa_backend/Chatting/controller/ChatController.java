@@ -37,4 +37,8 @@ public final class ChatController {
     public ResponseEntity<?> getChatHistory(@PathVariable Long roomId) {
         return ResponseEntity.ok(chatService.getChatHistory(roomId));
     }
+
+    //채팅방 참가하기
+    @PostMapping("/room/group/{roomId}/join")
+    public ResponseEntity<?> joinGroupChatRoom(@PathVariable Long roomId)
 }

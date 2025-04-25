@@ -15,5 +15,5 @@ public interface ChatService {
     Long createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor);
     List<ChatRoomResDto> getMyGroupChatRooms();
     List<ChatMessageHisDto> getChatHistory(Long roomId);
-    void addParticipantToRoom(ChatRoom chatRoom, Employee employee);
+    void addParticipantToGroupChat(Long roomId);
 }

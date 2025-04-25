@@ -14,6 +14,7 @@ import com.sideproject.musinsa_backend.Chatting.repository.ReadStatusRepository;
 import com.sideproject.musinsa_backend.Employee.domain.Employee;
 import com.sideproject.musinsa_backend.Employee.domain.Position;
 import com.sideproject.musinsa_backend.Employee.exception.EmployeeNotFoundException;
+import com.sideproject.musinsa_backend.Employee.exception.InvalidPasswordException;
 import com.sideproject.musinsa_backend.Employee.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -224,6 +226,29 @@ public class ChatServiceImpl implements ChatService {
 
 //    채팅방 참가하기
     @Override
+    public void addParticipantToGroupChat(Long roomId){
+//        채팅방 조회
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+
+//        현재 로그인한 유저 조회
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(()->new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
+
+//        그룹 채팅인지 여부 판단
+        if(chatRoom.getIsGroupChat().equals("N")){
+            throw new IllegalArgumentException("그룹 채팅이 아닙니다.");
+        }
+
+//        이미 참여자 인지 검증
+        Optional<ChatParticipant> participant = chatParticipantRepository.findByChatRoomAndEmployee(chatRoom, employee);
+
+//        참여하지 않은 회원이라면, 참가자에 추가
+        if(!participant.isPresent()){
+            addParticipantToRoom(chatRoom, employee);
+        }
+    }
+
     public void addParticipantToRoom(ChatRoom chatRoom, Employee employee){
         ChatParticipant chatParticipant = ChatParticipant.builder()
                 .chatRoom(chatRoom)
