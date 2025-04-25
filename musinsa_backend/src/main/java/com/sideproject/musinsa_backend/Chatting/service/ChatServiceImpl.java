@@ -67,7 +67,7 @@ public class ChatServiceImpl implements ChatService {
         for (ChatParticipant c : chatParticipants) {
             ReadStatus readStatus = ReadStatus.builder()
                     .chatRoom(chatRoom)
-                    .empolyee(c.getEmployee())
+                    .employee(c.getEmployee())
                     .chatMessage(chatMessage)
                     .isRead(c.getEmployee().getId().equals(sender.getId()))
                     .build();
@@ -256,5 +256,22 @@ public class ChatServiceImpl implements ChatService {
                 .build();
 
         chatParticipantRepository.save(chatParticipant);
+    }
+
+//    메시지 읽음 처리 여부
+    @Override
+    public void messageRead(Long roomId){
+        ChatRoom chatRoom = chatRoomRepository.findById(roomId)
+                .orElseThrow(()-> new ChatRoomNotFoundException("존재하지 않은 채팅방입니다."));
+
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원입니다."));
+
+        List<ReadStatus> readStatuses = readStatusRepository.findByChatRoomAndEmployee(chatRoom, employee);
+
+        for(ReadStatus rs : readStatuses){
+            rs.updateIsRead(true);
+        }
+
     }
 }
