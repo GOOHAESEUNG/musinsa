@@ -1,5 +1,3 @@
-
-
 <template>
   <div class="create-chat-room-page">
     <h1>채팅방 생성</h1>
@@ -17,12 +15,15 @@
       </select>
 
       <label v-if="form.chatRoomType === 'FLOOR'">층 정보:</label>
-      <input
-        v-if="form.chatRoomType === 'FLOOR'"
-        v-model="form.floor"
-        type="text"
-        placeholder="예: 2F"
-      />
+      <div v-if="form.chatRoomType === 'FLOOR'" class="floor-buttons">
+        <button v-for="floor in ['지하1층', '1층', '2층', '3층', '4층']"
+                :key="floor"
+                type="button"
+                @click="form.floor = floor"
+                :class="{ selected: form.floor === floor }">
+          {{ floor }}
+        </button>
+      </div>
 
       <button type="submit">생성하기</button>
     </form>
@@ -107,5 +108,32 @@ const submitForm = async () => {
 
 .create-chat-room-page button:hover {
   background-color: #222;
+}
+
+.create-chat-room-page .floor-buttons {
+  display: flex;
+  gap: 16px; /* 버튼 사이 간격 늘림 */
+  flex-wrap: wrap;
+  justify-content: center; /* 가운데 정렬 */
+}
+
+.create-chat-room-page .floor-buttons button {
+  background-color: #9a9a9a;
+  border: 1px solid #ccc;
+  padding: 6px 12px; /* 크기 줄임 */
+  border-radius: 6px;
+  font-size: 12px; /* 글자 크기 줄임 */
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  max-width: 100px; /* 최대 너비 지정 */
+}
+
+.create-chat-room-page .floor-buttons button:hover {
+  background-color: #ddd;
+}
+
+.create-chat-room-page .floor-buttons button.selected {
+  background-color: #333;
+  color: white;
 }
 </style>
