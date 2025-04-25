@@ -17,4 +17,5 @@ public class ChatRoomResDto {
     private ChatRoomType chatRoomType;
     private String floor;
     private Boolean isParticipant;
+    private Long unreadCount;
 }

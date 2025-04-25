@@ -178,19 +178,38 @@ public class ChatServiceImpl implements ChatService {
         List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
 
         for (ChatRoom c : chatRooms) {
-            boolean isParticipant = chatParticipantRepository.existsByChatRoomAndEmployee(c, employee);
+            Optional<ChatParticipant> chatParticipant = chatParticipantRepository.findByChatRoomAndEmployee(c, employee);
 
-            ChatRoomResDto dto = ChatRoomResDto
-                    .builder()
-                    .roomId(c.getId())
-                    .roomName(c.getName())
-                    .isGroupChat(c.getIsGroupChat())
-                    .chatRoomType(c.getChatRoomType())
-                    .floor(c.getFloor())
-                    .isParticipant(isParticipant)
-                    .build();
+            if (chatParticipant.isPresent()) {
+                Long count = readStatusRepository.countByChatRoomAndEmployeeAndIsReadFalse(c, employee);
+                //참여한 채팅방일 경우
+                ChatRoomResDto dto = ChatRoomResDto
+                        .builder()
+                        .roomId(c.getId())
+                        .roomName(c.getName())
+                        .isGroupChat(c.getIsGroupChat())
+                        .chatRoomType(c.getChatRoomType())
+                        .floor(c.getFloor())
+                        .isParticipant(true)
+                        .unreadCount(count)
+                        .build();
 
-            chatRoomResDtos.add(dto);
+                chatRoomResDtos.add(dto);
+            }else{
+                //참여하지 않은 채팅방일 경우
+                ChatRoomResDto dto = ChatRoomResDto
+                        .builder()
+                        .roomId(c.getId())
+                        .roomName(c.getName())
+                        .isGroupChat(c.getIsGroupChat())
+                        .chatRoomType(c.getChatRoomType())
+                        .floor(c.getFloor())
+                        .isParticipant(false)
+                        .unreadCount(null)
+                        .build();
+
+                chatRoomResDtos.add(dto);
+            }
 
         }
 

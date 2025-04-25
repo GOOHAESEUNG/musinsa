@@ -27,7 +27,15 @@
           <div class="chat-room-label" :class="room.isGroupChat === 'Y' ? 'group' : 'private'">
             {{ room.isGroupChat === 'Y' ? '단체 채팅방' : '1:1 채팅방' }}
           </div>
-          <div class="chat-room-name">{{ room.roomName }}</div>
+          <div class="chat-room-name-wrapper">
+            <div class="chat-room-name">{{ room.roomName }}</div>
+            <span
+              class="chat-room-unread"
+              v-if="selectedTab === 'participated' && room.unreadCount > 0"
+            >
+              {{ room.unreadCount }}
+            </span>
+          </div>
           <div class="chat-room-type">({{ getRoomTypeLabel(room.chatRoomType) }})</div>
         </div>
         <div class="join-button-wrapper" v-if="selectedTab === 'notParticipated'">
@@ -183,6 +191,13 @@ const joinChatRoom = async (roomId) => {
   font-weight: 600;
 }
 
+.chat-room-name-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
 .chat-room-type {
   font-size: 13px;
   color: #888;
@@ -237,5 +252,19 @@ const joinChatRoom = async (roomId) => {
 
 .join-button:hover {
   background-color: #ccc;
+}
+</style>
+<style scoped>
+.chat-room-unread {
+  display: inline-block;
+  min-width: 16px;
+  padding: 1px 5px;
+  font-size: 10px;
+  font-weight: bold;
+  color: white;
+  background-color: #d17171;
+  border-radius: 8px;
+  text-align: center;
+  margin-left: 6px;
 }
 </style>
