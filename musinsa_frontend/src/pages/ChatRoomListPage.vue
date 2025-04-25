@@ -16,7 +16,13 @@
     </div>
 
     <div class="chat-room-list">
-      <div class="chat-room-card" v-for="room in displayedRooms" :key="room.roomId" @click="goToRoom(room.roomId)">
+      <div
+        class="chat-room-card"
+        :class="{ 'non-participant': selectedTab === 'notParticipated' }"
+        v-for="room in displayedRooms"
+        :key="room.roomId"
+        @click="selectedTab === 'participated' && goToRoom(room.roomId)"
+      >
         <div class="chat-room-info-horizontal">
           <div class="chat-room-label" :class="room.isGroupChat === 'Y' ? 'group' : 'private'">
             {{ room.isGroupChat === 'Y' ? '단체 채팅방' : '1:1 채팅방' }}
@@ -111,6 +117,18 @@ const getRoomTypeLabel = (type) => {
   width: 80%;
   max-width: 520px;
   flex-wrap: nowrap;
+  transition: all 0.2s ease-in-out;
+}
+
+.chat-room-card.non-participant {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.chat-room-card:not(.non-participant):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.2s ease-in-out;
 }
 
 /* .chat-room-info {
