@@ -303,4 +303,30 @@ public class ChatServiceImpl implements ChatService {
             }
         }
     }
+
+
+    //채팅방 자동 참가
+    @Override
+    public void addUserToEligibleRooms(Employee newUser) {
+        List<ChatRoom> allRooms = chatRoomRepository.findByIsGroupChat("Y");
+
+        for (ChatRoom room : allRooms) {
+            switch (room.getChatRoomType()) {
+                case NOTICE:
+                case PROREQ:
+                    // 전체 자동 참가
+                    addParticipantToRoom(room, newUser);
+                    break;
+                case FLOOR:
+                    // 층 일치 시 자동 참가
+                    if (room.getFloor() != null && room.getFloor().equals(newUser.getFloor())) {
+                        addParticipantToRoom(room, newUser);
+                    }
+                    break;
+                default:
+                    // PRIVATE는 수동 참가
+                    break;
+            }
+        }
+    }
 }

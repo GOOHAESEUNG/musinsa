@@ -17,4 +17,5 @@ public interface ChatService {
     List<ChatMessageHisDto> getChatHistory(Long roomId);
     void addParticipantToGroupChat(Long roomId);
     void messageRead(Long roomId);
+    void addUserToEligibleRooms(Employee newUser);
 }
