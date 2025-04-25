@@ -33,7 +33,7 @@
         <div class="join-button-wrapper" v-if="selectedTab === 'notParticipated'">
           <button
             class="join-button"
-            @click.stop
+            @click.stop="joinChatRoom(room.roomId)"
           >
             참가
           </button>
@@ -91,6 +91,19 @@ const getRoomTypeLabel = (type) => {
       return '사담방'
     default:
       return '기타'
+  }
+}
+
+const joinChatRoom = async (roomId) => {
+  try {
+    await axios.post(`/api/chat/room/group/${roomId}/join`, {}, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    router.push(`/chat/room/${roomId}`)
+  } catch (error) {
+    console.error('채팅방 참가 중 오류 발생:', error)
   }
 }
 </script>
