@@ -5,6 +5,7 @@ import com.sideproject.musinsa_backend.Chatting.dto.CreateGroupRoomReqDto;
 import com.sideproject.musinsa_backend.Chatting.service.ChatService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.method.P;
 import org.springframework.web.bind.annotation.*;
 import lombok.RequiredArgsConstructor;
 
@@ -36,5 +37,19 @@ public final class ChatController {
     @GetMapping("/history/{roomId}")
     public ResponseEntity<?> getChatHistory(@PathVariable Long roomId) {
         return ResponseEntity.ok(chatService.getChatHistory(roomId));
+    }
+
+    //채팅방 참가하기
+    @PostMapping("/room/group/{roomId}/join")
+    public ResponseEntity<?> joinGroupChatRoom(@PathVariable Long roomId){
+        chatService.addParticipantToGroupChat(roomId);
+        return ResponseEntity.ok().build();
+    }
+
+    //메시지 읽음 여부 처리
+    @PostMapping("/room/{roomId}/read")
+    public ResponseEntity<?> messageRead(@PathVariable Long roomId) {
+        chatService.messageRead(roomId);
+        return ResponseEntity.ok().build();
     }
 }

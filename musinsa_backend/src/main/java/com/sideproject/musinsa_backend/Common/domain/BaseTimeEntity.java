@@ -1,5 +1,6 @@
 package com.sideproject.musinsa_backend.Common.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
 import org.hibernate.annotations.CreationTimestamp;

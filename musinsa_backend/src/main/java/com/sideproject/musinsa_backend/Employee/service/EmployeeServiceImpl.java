@@ -1,5 +1,6 @@
 package com.sideproject.musinsa_backend.Employee.service;
 
+import com.sideproject.musinsa_backend.Chatting.service.ChatService;
 import com.sideproject.musinsa_backend.Employee.domain.Employee;
 import com.sideproject.musinsa_backend.Employee.domain.Position;
 import com.sideproject.musinsa_backend.Employee.dto.EmployeeLoginDto;
@@ -19,6 +20,7 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
+    private final ChatService chatService;
 
     @Override
     public Employee create(EmployeeSaveDto dto){
@@ -38,6 +40,8 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .build();
 
         Employee savedEmployee = employeeRepository.save(newEmployee);
+        chatService.addUserToEligibleRooms(newEmployee);
+
         return savedEmployee;
     }
 

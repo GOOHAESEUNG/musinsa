@@ -4,7 +4,6 @@ import { createRouter, createWebHistory } from 'vue-router'
 import SignupPage from '@/pages/SignupPage.vue'
 import HomePage from '@/pages/HomePage.vue'
 import LoginPage from '@/pages/LoginPage.vue'
-import MyInfoPage from '@/pages/MyInfoPage.vue'
 import BaseLayout from '@/layouts/BaseLayout.vue'
 
 const routes = [
@@ -15,7 +14,7 @@ const routes = [
       {
         path: 'myInfo',
         name: 'MyInfo',
-        component: MyInfoPage
+        component: () => import('@/pages/MyInfoPage.vue')
       },
       {
         path: 'chat/rooms',
