@@ -1,30 +1,58 @@
 <template>
-  <div>
-    <h1>채팅방 목록</h1>
-    <div class="chat-room-list">
-      <div
-        class="chat-room-card"
-        v-for="room in chatRooms"
-        :key="room.roomId"
-        @click="goToRoom(room.roomId)"
+  <div class="chat-room-tabs">
+    <div class="tab-header">
+      <button
+        :class="{ active: selectedTab === 'participated' }"
+        @click="selectedTab = 'participated'"
       >
-        <div class="chat-room-label" :class="room.isGroupChat === 'Y' ? 'group' : 'private'">
-          {{ room.isGroupChat === 'Y' ? '단체 채팅방' : '1:1 채팅방' }}
+        참여한 채팅방
+      </button>
+      <button
+        :class="{ active: selectedTab === 'notParticipated' }"
+        @click="selectedTab = 'notParticipated'"
+      >
+        참여하지 않은 채팅방
+      </button>
+    </div>
+
+    <div class="chat-room-list">
+      <div class="chat-room-card" v-for="room in displayedRooms" :key="room.roomId" @click="goToRoom(room.roomId)">
+        <div class="chat-room-info-horizontal">
+          <div class="chat-room-label" :class="room.isGroupChat === 'Y' ? 'group' : 'private'">
+            {{ room.isGroupChat === 'Y' ? '단체 채팅방' : '1:1 채팅방' }}
+          </div>
+          <div class="chat-room-name">{{ room.roomName }}</div>
+          <div class="chat-room-type">({{ getRoomTypeLabel(room.chatRoomType) }})</div>
         </div>
-        <div class="chat-room-name">{{ room.roomName }}</div>
-        <div class="chat-room-type">({{ room.chatRoomType ?? room.chatRoomType?.name }})</div>
+        <div class="join-button-wrapper" v-if="selectedTab === 'notParticipated'">
+          <button
+            class="join-button"
+            @click.stop
+          >
+            참가
+          </button>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const chatRooms = ref([])
+const participatedRooms = ref([])
+const notParticipatedRooms = ref([])
+
+const selectedTab = ref('participated')
+
+const displayedRooms = computed(() => {
+  return selectedTab.value === 'participated'
+    ? participatedRooms.value
+    : notParticipatedRooms.value
+})
 
 const goToRoom = (roomId) => {
   router.push(`/chat/room/${roomId}`)
@@ -33,15 +61,32 @@ const goToRoom = (roomId) => {
 onMounted(async () => {
   try {
     const response = await axios.get('/api/chat/rooms/my', {
-        headers: {
-         Authorization: `Bearer ${localStorage.getItem('token')}`
-  }
-})
-    chatRooms.value = response.data
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    const allRooms = response.data
+    participatedRooms.value = allRooms.filter(r => r.isParticipant)
+    notParticipatedRooms.value = allRooms.filter(r => !r.isParticipant)
   } catch (error) {
     console.error('채팅방 목록을 불러오는 중 오류 발생:', error)
   }
 })
+
+const getRoomTypeLabel = (type) => {
+  switch (type) {
+    case 'NOTICE':
+      return '공지방'
+    case 'PROREQ':
+      return '상품 요청방'
+    case 'FLOOR':
+      return '층별방'
+    case 'PRIVATE':
+      return '사담방'
+    default:
+      return '기타'
+  }
+}
 </script>
 
 <style scoped>
@@ -50,15 +95,42 @@ onMounted(async () => {
   flex-direction: column;
   gap: 12px;
   margin-top: 16px;
+  align-items: center;
 }
 
 .chat-room-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   border: 1px solid #ddd;
   border-radius: 8px;
   padding: 12px 16px;
   background-color: #f9f9f9;
   box-shadow: 0 1px 3px rgba(0,0,0,0.05);
   cursor: pointer;
+  width: 80%;
+  max-width: 520px;
+  flex-wrap: nowrap;
+}
+
+/* .chat-room-info {
+  display: flex;
+  flex-direction: column;
+} */
+
+.chat-room-info-horizontal {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  align-items: center;
+  justify-items: center;
+  width: 100%;
+}
+
+.chat-room-info-horizontal > div {
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .chat-room-label {
@@ -68,7 +140,7 @@ onMounted(async () => {
 }
 
 .chat-room-label.group {
-  color: #1e88e5;
+  color: #846c95;
 }
 
 .chat-room-label.private {
@@ -83,5 +155,54 @@ onMounted(async () => {
 .chat-room-type {
   font-size: 13px;
   color: #888;
+}
+
+.chat-room-tabs {
+  width: 100%;
+}
+
+.tab-header {
+  display: flex;
+  justify-content: center; /* 중앙 정렬 */
+  gap: 16px;
+  margin: 40px 0 20px; /* 상단 여백 추가 */
+}
+
+.tab-header button {
+  padding: 8px 16px;
+  border: none;
+  background-color: #eee;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.tab-header button.active {
+  background-color: #846c95;
+  color: white;
+}
+
+.join-button-wrapper {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  margin-left: 12px;
+}
+
+.join-button {
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 16px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+.join-button:hover {
+  background-color: #ccc;
 }
 </style>
