@@ -16,4 +16,5 @@ public class ChatRoomResDto {
     private String isGroupChat;
     private ChatRoomType chatRoomType;
     private String floor;
+    private Boolean isParticipant;
 }

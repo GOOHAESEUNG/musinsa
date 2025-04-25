@@ -65,9 +65,9 @@ public class ChatServiceImpl implements ChatService {
         for (ChatParticipant c : chatParticipants) {
             ReadStatus readStatus = ReadStatus.builder()
                     .chatRoom(chatRoom)
-                    .empolyee(c.getEmpolyee())
+                    .empolyee(c.getEmployee())
                     .chatMessage(chatMessage)
-                    .isRead(c.getEmpolyee().getId().equals(sender.getId()))
+                    .isRead(c.getEmployee().getId().equals(sender.getId()))
                     .build();
             readStatusRepository.save(readStatus);
         }
@@ -115,7 +115,7 @@ public class ChatServiceImpl implements ChatService {
             for (Employee e : floorEmployees) {
                 ChatParticipant c = ChatParticipant.builder()
                         .chatRoom(chatRoom)
-                        .empolyee(e)
+                        .employee(e)
                         .build();
 
                 chatParticipantRepository.save(c);
@@ -124,7 +124,7 @@ public class ChatServiceImpl implements ChatService {
             //채팅방 만든 관리자도 참가자로 추가
             ChatParticipant made = ChatParticipant.builder()
                     .chatRoom(chatRoom)
-                    .empolyee(employee)
+                    .employee(employee)
                     .build();
 
             chatParticipantRepository.save(made);
@@ -139,7 +139,7 @@ public class ChatServiceImpl implements ChatService {
             for (Employee e : allEmployees) {
                 ChatParticipant c = ChatParticipant.builder()
                         .chatRoom(chatRoom)
-                        .empolyee(e)
+                        .employee(e)
                         .build();
 
                 chatParticipantRepository.save(c);
@@ -150,7 +150,7 @@ public class ChatServiceImpl implements ChatService {
 
             ChatParticipant made = ChatParticipant.builder()
                     .chatRoom(chatRoom)
-                    .empolyee(employee)
+                    .employee(employee)
                     .build();
             chatParticipantRepository.save(made);
 
@@ -162,25 +162,35 @@ public class ChatServiceImpl implements ChatService {
     //그룹 채팅방 목록
     @Override
     public List<ChatRoomResDto> getMyGroupChatRooms(){
-        List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
+        //현재 유저의 정보를 받아옴
+        Employee employee = employeeRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName())
+                .orElseThrow(()-> new EmployeeNotFoundException("존재 하지 않은 회원 입니다."));
 
+        //반환 객체 생성
         List<ChatRoomResDto> chatRoomResDtos = new ArrayList<>();
 
+        //그룹 채팅방만 리스트로 가져옴
+        List<ChatRoom> chatRooms = chatRoomRepository.findByIsGroupChat("Y");
+
         for(ChatRoom c : chatRooms){
-            ChatRoomResDto dto = ChatRoomResDto
-                    .builder()
-                    .roomId(c.getId())
-                    .roomName(c.getName())
-                    .isGroupChat(c.getIsGroupChat())
-                    .chatRoomType(c.getChatRoomType())
-                    .floor(c.getFloor())
-                    .build();
+                boolean isParticipant = chatParticipantRepository.existsByChatRoomAndEmployee(c, employee);
 
-            chatRoomResDtos.add(dto);
+                    ChatRoomResDto dto = ChatRoomResDto
+                            .builder()
+                            .roomId(c.getId())
+                            .roomName(c.getName())
+                            .isGroupChat(c.getIsGroupChat())
+                            .chatRoomType(c.getChatRoomType())
+                            .floor(c.getFloor())
+                            .isParticipant(isParticipant)
+                            .build();
+
+                    chatRoomResDtos.add(dto);
+
+            }
+
+         return chatRoomResDtos;
         }
-
-        return chatRoomResDtos;
-    }
 
 
     //채팅 이전 기록 가져오기
