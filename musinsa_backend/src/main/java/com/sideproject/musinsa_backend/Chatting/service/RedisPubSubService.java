@@ -2,6 +2,8 @@ package com.sideproject.musinsa_backend.Chatting.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageHisDto;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +45,8 @@ public class RedisPubSubService implements MessageListener {
         String payload = new String(message.getBody()); //redis로부터 수신된 메시지(문자열)
 
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         try{
 //            reids에서 받은 메시지는 단순 문자열(JSON)이므로
 //            ChatMessageDto 형태의 객체로 변환해줌

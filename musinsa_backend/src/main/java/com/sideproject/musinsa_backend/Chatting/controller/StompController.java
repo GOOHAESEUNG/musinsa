@@ -2,6 +2,8 @@ package com.sideproject.musinsa_backend.Chatting.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sideproject.musinsa_backend.Chatting.domain.ChatRoom;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageDto;
 import com.sideproject.musinsa_backend.Chatting.dto.ChatMessageHisDto;
@@ -33,11 +35,15 @@ public class StompController {
     public void sendMessage(@DestinationVariable Long roomId, ChatMessageDto chatMessageDto)
     throws JsonProcessingException {
 
-         chatService.saveMessage(roomId, chatMessageDto);
-         chatMessageDto.setRoomId(roomId);
+        ChatMessageDto pubMessage = chatService.saveMessage(roomId, chatMessageDto);
 
+        pubMessage.setRoomId(roomId);
          ObjectMapper objectMapper = new ObjectMapper();
-         String message = objectMapper.writeValueAsString(chatMessageDto);
+         objectMapper.registerModule(new JavaTimeModule());
+         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+         String message = objectMapper.writeValueAsString(pubMessage);
+//        System.out.println(message);
          redisPubSubService.publish("chat", message);
     }
 }

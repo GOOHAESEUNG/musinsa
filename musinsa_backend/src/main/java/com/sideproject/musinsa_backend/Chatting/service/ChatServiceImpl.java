@@ -36,7 +36,7 @@ public class ChatServiceImpl implements ChatService {
 
 
     @Override
-    public void saveMessage(Long roomId, ChatMessageDto chatMessageDto) {
+    public ChatMessageDto saveMessage(Long roomId, ChatMessageDto chatMessageDto) {
 
 //         채팅방 조회
         ChatRoom chatRoom = chatRoomRepository.findById(roomId)
@@ -56,13 +56,8 @@ public class ChatServiceImpl implements ChatService {
 
         chatMessageRepository.save(chatMessage);
 
-        ChatMessageHisDto chatMessageHisDto = ChatMessageHisDto.builder()
-                .message(chatMessage.getContent())
-                .senderEmail(sender.getEmail())
-                .senderName(sender.getName())
-                .messageType(chatMessage.getMessageType())
-                .sendDate(chatMessage.getCreateTime())
-                .build();
+        chatMessageDto.setSenderName(sender.getName());
+        chatMessageDto.setSendDate(chatMessage.getCreateTime());
 
 
 //        사용자별 읽음 처리
@@ -76,6 +71,8 @@ public class ChatServiceImpl implements ChatService {
                     .build();
             readStatusRepository.save(readStatus);
         }
+
+        return chatMessageDto;
     }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface ChatService {
 
-    void saveMessage(Long roomId, ChatMessageDto chatMessageDto);
+    ChatMessageDto saveMessage(Long roomId, ChatMessageDto chatMessageDto);
     Long createGroupRoom(String chatRoomName, ChatRoomType chatRoomtype, String floor);
     List<ChatRoomResDto> getMyGroupChatRooms();
     List<ChatMessageHisDto> getChatHistory(Long roomId);
