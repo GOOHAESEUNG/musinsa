@@ -221,4 +221,15 @@ public class ChatServiceImpl implements ChatService {
             return chatMessageHisDtos;
 
     }
+
+//    채팅방 참가하기
+    @Override
+    public void addParticipantToRoom(ChatRoom chatRoom, Employee employee){
+        ChatParticipant chatParticipant = ChatParticipant.builder()
+                .chatRoom(chatRoom)
+                .employee(employee)
+                .build();
+
+        chatParticipantRepository.save(chatParticipant);
+    }
 }
