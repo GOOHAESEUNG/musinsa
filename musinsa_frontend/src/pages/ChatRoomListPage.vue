@@ -163,9 +163,10 @@ const getRoomTypeLabel = (type) => {
 
 .tab-header {
   display: flex;
-  justify-content: center; /* 중앙 정렬 */
-  gap: 16px;
-  margin: 40px 0 20px; /* 상단 여백 추가 */
+  justify-content: center;
+  width: fit-content;
+  margin: 40px auto 20px;
+  gap: 12px;
 }
 
 .tab-header button {
@@ -176,6 +177,7 @@ const getRoomTypeLabel = (type) => {
   cursor: pointer;
   font-weight: 600;
   font-size: 14px;
+  width: 150px;
 }
 
 .tab-header button.active {
