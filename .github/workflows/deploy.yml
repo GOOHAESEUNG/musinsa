@@ -35,6 +35,7 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, Tag, and Push Docker image to ECR
+        working-directory: musinsa_backend
         env:
           ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
