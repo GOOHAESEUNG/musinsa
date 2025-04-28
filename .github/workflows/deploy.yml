@@ -20,6 +20,7 @@ jobs:
           java-version: '17'
 
       - name: Build with Gradle
+        working-directory: musinsa_backend
         run: ./gradlew build
 
       - name: Configure AWS credentials
