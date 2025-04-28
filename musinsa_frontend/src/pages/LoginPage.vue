@@ -33,7 +33,7 @@ const errorMessage = ref('')
 
 const submitForm = async () => {
   try {
-    const response = await axios.post('/employee/doLogin', form.value)
+    const response = await axios.post(`${process.env.VUE_APP_API_BASE_URL}/employee/doLogin`, form.value)
     const token = response.data.token
     const email = jwtDecode(token).sub // 이메일을 JWT에서 추출
     localStorage.setItem('token', token)

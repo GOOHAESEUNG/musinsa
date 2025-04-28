@@ -129,14 +129,14 @@ const formatTime = (datetime) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`/api/chat/history/${roomId}`, {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/chat/history/${roomId}`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
     })
     messages.value = response.data
 
-    const metaResponse = await axios.get('/api/chat/rooms/my', {
+    const metaResponse = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/chat/rooms/my`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -158,7 +158,7 @@ onMounted(async () => {
 const disconnectWebSocket = async () => {
   try {
     await axios.post(
-      `/api/chat/room/${roomId}/read`,
+      `${process.env.VUE_APP_API_BASE_URL}/api/chat/room/${roomId}/read`,
       {},
       {
         headers: {

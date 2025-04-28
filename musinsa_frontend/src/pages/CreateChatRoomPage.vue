@@ -2,10 +2,10 @@
   <div class="create-chat-room-page">
     <h1>채팅방 생성</h1>
     <form @submit.prevent="submitForm">
-      <label>채팅방 이름:</label>
+      <label>채팅방 이름</label>
       <input v-model="form.roomName" type="text" required />
 
-      <label>채팅방 유형:</label>
+      <label>채팅방 유형</label>
       <select v-model="form.chatRoomType" required>
         <option disabled value="">선택하세요</option>
         <option value="FLOOR">층별 채팅방</option>
@@ -14,7 +14,7 @@
         <option value="PRIVATE">사담방</option>
       </select>
 
-      <label v-if="form.chatRoomType === 'FLOOR'">층 정보:</label>
+      <label v-if="form.chatRoomType === 'FLOOR'">층 정보</label>
       <div v-if="form.chatRoomType === 'FLOOR'" class="floor-buttons">
         <button v-for="floor in ['지하1층', '1층', '2층', '3층', '4층']"
                 :key="floor"
@@ -45,7 +45,7 @@ const form = ref({
 
 const submitForm = async () => {
   try {
-    await axios.post('/api/chat/rooms/group', form.value, {
+    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/api/chat/rooms/group`, form.value, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

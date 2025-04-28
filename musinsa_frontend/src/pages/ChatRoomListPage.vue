@@ -74,7 +74,7 @@ const goToRoom = (roomId) => {
 
 onMounted(async () => {
   try {
-    const response = await axios.get('/api/chat/rooms/my', {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/api/chat/rooms/my`, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }
@@ -104,7 +104,7 @@ const getRoomTypeLabel = (type) => {
 
 const joinChatRoom = async (roomId) => {
   try {
-    await axios.post(`/api/chat/room/group/${roomId}/join`, {}, {
+    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/api/chat/room/group/${roomId}/join`, {}, {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`
       }

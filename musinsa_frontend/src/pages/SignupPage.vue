@@ -70,7 +70,7 @@ const errorMessage = ref('')
 
 const submitForm = async () => {
   try {
-    await axios.post('/employee/create', form.value)
+    await axios.post(`${process.env.VUE_APP_API_BASE_URL}/employee/create`, form.value)
     router.push('/login') // 회원가입 성공 시 로그인 페이지로 이동
   } catch (error) {
     errorMessage.value = error.response?.data?.message || '회원가입에 실패했습니다.'

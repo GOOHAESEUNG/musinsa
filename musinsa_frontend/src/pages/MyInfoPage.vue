@@ -24,7 +24,7 @@ onMounted(async () => {
     const token = localStorage.getItem('token')
     console.log('📦 로컬 스토리지 토큰:', token)
 
-    const response = await axios.get('/employee/myInfo', {
+    const response = await axios.get(`${process.env.VUE_APP_API_BASE_URL}/employee/myInfo`, {
       headers: {
         Authorization: `Bearer ${token}`
       }

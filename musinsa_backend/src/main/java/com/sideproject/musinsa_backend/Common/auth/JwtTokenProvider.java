@@ -33,6 +33,5 @@ public class JwtTokenProvider {
                 .setExpiration(new Date(now.getTime()+expiration*60*1000L)) //만료일자 설정, 현재 시간에 + 토큰 만료 시간 ---> 밀리초 단위
                 .signWith(SECRET_KEY) //서명
                 .compact();
-        return token;
-    }
+        return token;    }
 }
