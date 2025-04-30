@@ -20,7 +20,7 @@ import java.util.Base64;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-    @Value("${JWT_SECRET_KEY}")
+    @Value("${jwt.secretKey}")
     private String secretKey;
 
     private Key key;

@@ -16,7 +16,7 @@ public class JwtTokenProvider {
     private final int expiration;
     private Key SECRET_KEY;
 
-    public JwtTokenProvider(@Value("${JWT_SECRET_KEY}")String secretkey,  @Value("${JWT_EXPIRATION}")int expiration) {
+    public JwtTokenProvider(@Value("${jwt.secretKey}")String secretkey,  @Value("${jwt.expiration}")int expiration) {
         this.expiration = expiration;
         this.SECRET_KEY = new SecretKeySpec(
                 java.util.Base64.getDecoder().decode(secretkey),  // 디코딩해서 byte[]로 변환
