@@ -30,7 +30,7 @@ import java.util.List;
 @Component
 public class JwtAuthFilter extends GenericFilter {
 
-    @Value("${jwt.secretKey}")
+    @Value("${JWT_SECRET_KEY}")
     private String secretKey;
 
     private Key key;
