@@ -6,7 +6,7 @@ import { Stomp } from '@stomp/stompjs'
 let stompClient = null
 
 export const connectStompClient = (onMessageReceived, roomId) => {
-  const socket = new SockJS('http://localhost:8080/connect') // 서버 주소에 따라 수정 필요
+  const socket = new SockJS(`${process.env.VUE_APP_API_BASE_URL}/connect`)// 서버 주소에 따라 수정 필요
   stompClient = Stomp.over(socket)
 
   const token = localStorage.getItem('token')
